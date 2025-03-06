@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<configuration debug="false">
+
+    <springProperty scope="context" name="LOG_HOME" source="logging.file.path" defaultValue="logs"/>
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="paysphere-trade"/>
+    <property name="log_pattern"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS Z} [%thread] %-5level %logger{50}:%line %msg%n"/>
+
+    <!-- 同步控制台输出 -->
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>${log_pattern}</pattern>
+            </layout>
+            <charset>UTF-8</charset>
+            <!--<sensitive>true</sensitive>
+            <replaces>
+                &lt;!&ndash; 脱敏规则 $1 匹配第一个括号的内容 $1$2******$4 代表隐藏第三个括号匹配的全部内容 &ndash;&gt;
+                <replace>
+                    <regex><![CDATA[(password|merchantSecret|publicKey)(=|=\[|\":\"|:|：|='|':')([^\"]*)(\]|\"|'|\s|\n)]]></regex>
+                    <replacement>$1$2******$4</replacement>
+                </replace>
+            </replaces>-->
+        </encoder>
+    </appender>
+
+    <!-- 异步控制台输出 -->
+    <appender name="AsyncConsole" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="Console"/>
+    </appender>
+
+    <!--文件日志-->
+    <!--异步日志：一 先声明同步文件-->
+    <appender name="SyncLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_HOME}/${APP_NAME}.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${LOG_HOME}/%d{yyyy-MM-dd,aux}/${APP_NAME}.log.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>30</MaxHistory>
+            <!--日志文件大小-->
+            <maxFileSize>1000MB</maxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>${log_pattern}</pattern>
+            </layout>
+            <charset>UTF-8</charset>
+            <!--<sensitive>true</sensitive>
+            <replaces>
+                &lt;!&ndash; 脱敏规则 $1 匹配第一个括号的内容 $1$2******$4 代表隐藏第三个括号匹配的全部内容 &ndash;&gt;
+                <replace>
+                    <regex><![CDATA[(password|merchantSecret|publicKey)(=|=\[|\":\"|:|：|='|':')([^\"]*)(\]|\"|'|\s|\n)]]></regex>
+                    <replacement>$1$2******$4</replacement>
+                </replace>
+            </replaces>-->
+        </encoder>
+    </appender>
+
+    <!--异步日志：二 使用 AspectLogbackAsyncAppender 配置异步 -->
+    <appender name="AsyncLogFile" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>2048</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="SyncLogFile"/>
+    </appender>
+
+
+    <!--环境-->
+    <springProfile name="dev">
+        <root level="DEBUG">
+            <appender-ref ref="AsyncConsole"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="test">
+        <root level="INFO">
+            <appender-ref ref="AsyncConsole"/>
+            <appender-ref ref="AsyncLogFile"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root level="ERROR">
+            <appender-ref ref="AsyncConsole"/>
+            <appender-ref ref="AsyncLogFile"/>
+        </root>
+    </springProfile>
+
+</configuration>

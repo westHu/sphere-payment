@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.0.0</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.paysphere</groupId>
+    <artifactId>paysphere-payment</artifactId>
+    <version>1.0.0</version>  <!--版本控制变更 7处-->
+    <packaging>pom</packaging>
+
+    <name>paysphere-payment</name>
+    <description>paysphere-payment project</description>
+
+    <modules>
+        <module>payment-api</module>
+        <module>payment-application</module>
+        <module>payment-infrastructure</module>
+        <module>payment-domain</module>
+        <module>payment-share</module>
+        <module>payment-start</module>
+    </modules>
+
+    <properties>
+        <!-- 指定Java版本为Java17 -->
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- 修复SpringBoot自带snakeyaml依赖版本的漏洞 -->
+        <snakeyaml.version>2.0</snakeyaml.version>
+        <!-- SpringDoc-OpenApi版本号 -->
+        <spring-doc.version>2.2.0</spring-doc.version>
+        <!-- SpringCloud版本 -->
+        <spring-cloud.version>2022.0.0</spring-cloud.version>
+        <!-- 指定打包插件版本 -->
+        <maven-surefire-plugin.version>3.2.2</maven-surefire-plugin.version>
+        <!-- Spring Cloud Alibaba版本号 -->
+        <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
+        <!-- hutool 版本号 -->
+        <hutool.version>5.8.8</hutool.version>
+        <!--cola-->
+        <cola.components.version>5.0.0</cola.components.version>
+        <!--validation-->
+        <validation-api.version>2.0.0.Final</validation-api.version>
+        <!--mybatis-plus-->
+        <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
+        <!--mysql-->
+        <mysql.version>8.0.31</mysql.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!--google-->
+            <dependency>
+                <groupId>com.google.cloud</groupId>
+                <artifactId>libraries-bom</artifactId>
+                <version>26.29.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!--spring cloud-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!--spring-cloud alibaba-->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- 适用于webmvc的SpringDoc依赖 -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${spring-doc.version}</version>
+            </dependency>
+
+            <!-- 适用于webflux的SpringDoc依赖 -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+                <version>${spring-doc.version}</version>
+            </dependency>
+
+            <!--Validation API-->
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${validation-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate-validator.version}</version>
+            </dependency>
+            <!--Validation API End -->
+
+            <!-- project-->
+            <dependency>
+                <groupId>com.paysphere</groupId>
+                <artifactId>payment-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.paysphere</groupId>
+                <artifactId>payment-application</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.paysphere</groupId>
+                <artifactId>payment-domain</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.paysphere</groupId>
+                <artifactId>payment-infrastructure</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.paysphere</groupId>
+                <artifactId>payment-share</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.paysphere</groupId>
+                <artifactId>payment-start</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+
+</project>
