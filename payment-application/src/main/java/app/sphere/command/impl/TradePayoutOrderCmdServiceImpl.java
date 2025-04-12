@@ -253,7 +253,7 @@ public class TradePayoutOrderCmdServiceImpl implements TradePayoutOrderCmdServic
             // 超时异常不做处理
             String errorMsg = e.getMessage();
             if (StringUtils.isNotBlank(errorMsg) && (errorMsg.contains(TradeConstant.SOCKET_TIME_OUT) || errorMsg.contains(TradeConstant.SOCKET_UNKNOWN))) {
-                String exMsg = "Paysphere Payout"
+                String exMsg = "sphere Payout"
                         + "\nTradeNo: " + order.getTradeNo()
                         + "\nOrderNo: " + order.getOrderNo()
                         + "\nSocket exception: " + errorMsg
@@ -270,7 +270,7 @@ public class TradePayoutOrderCmdServiceImpl implements TradePayoutOrderCmdServic
             handlerFailedTradeResult(order, errorMsg);
 
             // 美化异常消息
-            log.error("paysphere trade doPayout {} exception errorMsg={}", order.getOrderNo(), errorMsg);
+            log.error("sphere trade doPayout {} exception errorMsg={}", order.getOrderNo(), errorMsg);
 
             // 回调或者抛异常
             Optional<MerchantResultDTO> merchantResultDTO = Optional.of(order).map(TradePayoutOrder::getTradeResult)

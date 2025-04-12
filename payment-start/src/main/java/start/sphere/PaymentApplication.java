@@ -25,8 +25,8 @@ public class PaymentApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        log.info("===> Congratulations paysphere!");
-        log.info("===> Paysphere springApplication start success, time:{}", LocalDateTime.now());
+        log.info("===> Congratulations sphere!");
+        log.info("===> sphere springApplication start success, time:{}", LocalDateTime.now());
     }
 
     @Bean

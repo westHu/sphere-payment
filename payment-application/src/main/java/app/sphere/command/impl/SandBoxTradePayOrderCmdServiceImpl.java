@@ -180,7 +180,7 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
 
             // 订单来源
             TradePaymentSourceEnum tradePaymentSourceEnum = TradePaymentSourceEnum.codeToEnum(order.getSource());
-            log.info("paysphere doCashierPay tradePaySourceEnum={}", tradePaymentSourceEnum.name());
+            log.info("sphere doCashierPay tradePaySourceEnum={}", tradePaymentSourceEnum.name());
             if (TradePaymentSourceEnum.PAY_LINK.equals(tradePaymentSourceEnum)) {
                 Integer paymentLinkStatus = TradePaymentLinkStatusEnum.PAYMENT_LINK_EXPIRED.getCode();
                 UpdateWrapper<SandboxTradePaymentLinkOrder> linkUpdate = new UpdateWrapper<>();

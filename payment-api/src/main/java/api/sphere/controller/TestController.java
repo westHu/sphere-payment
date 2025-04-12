@@ -15,7 +15,7 @@ public class TestController {
 
     @GetMapping(value = "/v1/hi")
     public Mono<String> hello() {
-        return Mono.just("payspherePay payment");
+        return Mono.just("spherePay payment");
     }
 
 }

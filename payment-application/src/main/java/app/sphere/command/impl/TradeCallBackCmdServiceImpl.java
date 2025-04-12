@@ -124,7 +124,7 @@ public class TradeCallBackCmdServiceImpl implements TradeCallBackCmdService {
             callBackResult = getCallbackResult(callBackResult);
             TradePaymentCallBackResult result = buildTradePayCallBackResult(dto, callBackResult, "system");
             boolean save = tradePaymentCallBackResultRepository.save(result);
-            log.info("paysphere doPayOrderCallBack callback add record result={}", save);
+            log.info("sphere doPayOrderCallBack callback add record result={}", save);
 
             // 更新回调状态、次数
             UpdateWrapper<TradePaymentOrder> payOrderUpdate = new UpdateWrapper<>();
@@ -228,7 +228,7 @@ public class TradeCallBackCmdServiceImpl implements TradeCallBackCmdService {
             callBackResult = getCallbackResult(callBackResult);
             TradePaymentCallBackResult result = buildTradePayCallBackResult(dto, callBackResult, command.getOperator());
             boolean save = tradePaymentCallBackResultRepository.save(result);
-            log.info("paysphere doPayOrderCallBack callback add record result={}", save);
+            log.info("sphere doPayOrderCallBack callback add record result={}", save);
 
             // 更新回调状态、次数
             UpdateWrapper<TradePaymentOrder> payOrderUpdate = new UpdateWrapper<>();
@@ -413,7 +413,7 @@ public class TradeCallBackCmdServiceImpl implements TradeCallBackCmdService {
         String tradeNo = body.getTradeNo();
         CallBackStatusEnum statusEnum = TradeConstant.CALLBACK_POST_SUCCESS.equalsIgnoreCase(callBackResult) ?
                 CallBackStatusEnum.CALLBACK_SUCCESS : CallBackStatusEnum.CALLBACK_FAILED;
-        log.info("paysphere buildTradeCashCallBackResult statusEnum={}", statusEnum.name());
+        log.info("sphere buildTradeCashCallBackResult statusEnum={}", statusEnum.name());
 
         // 返回结果
         TradeCallBackResultDTO tradeCallBackResultDTO = new TradeCallBackResultDTO();

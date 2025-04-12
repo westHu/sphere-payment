@@ -234,7 +234,7 @@ public class TradePaymentOrderCmdServiceImpl implements TradePaymentOrderCmdServ
 
             // 超时或者渠道异常，收款抛异常
             if (errorMsg.contains(TradeConstant.SOCKET_TIME_OUT) || errorMsg.contains(TradeConstant.SOCKET_UNKNOWN)) {
-                String exMsg = "Paysphere Payout"
+                String exMsg = "sphere Payout"
                         + "\nTradeNo: " + order.getTradeNo()
                         + "\norderNo: " + order.getOrderNo()
                         + "\nSocket exception: " + errorMsg
@@ -395,7 +395,7 @@ public class TradePaymentOrderCmdServiceImpl implements TradePaymentOrderCmdServ
 
             // 超时或者渠道异常，收款抛异常
             if (errorMsg.contains(TradeConstant.SOCKET_TIME_OUT) || errorMsg.contains(TradeConstant.SOCKET_UNKNOWN)) {
-                String exMsg = "Paysphere Payin"
+                String exMsg = "sphere Payin"
                         + "\nTradeNo: " + order.getTradeNo()
                         + "\norderNo: " + order.getOrderNo()
                         + "\nSocket exception: " + errorMsg

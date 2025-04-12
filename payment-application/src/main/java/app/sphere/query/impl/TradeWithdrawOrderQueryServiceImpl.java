@@ -105,7 +105,7 @@ public class TradeWithdrawOrderQueryServiceImpl implements TradeWithdrawOrderQue
         // 上传谷歌
         String fileName = StorageUtil.exportCsvFile("withdraw-");
         String uploadObject = null;//storageHandler.uploadObject(csvDTOList, param.getOperator(), fileName, "WithdrawOrderList");
-        log.info("payspherepay exportWithdrawOrderList uploadObject={}", uploadObject);
+        log.info("spherepay exportWithdrawOrderList uploadObject={}", uploadObject);
         return uploadObject;
     }
 

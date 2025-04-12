@@ -89,7 +89,7 @@ public class TradeRechargeOrderQueryServiceImpl implements TradeRechargeOrderQue
         // 上传谷歌
         String fileName = StorageUtil.exportCsvFile("topUp-");
         String uploadObject = null; //storageHandler.uploadObject(csvDTOList, param.getOperator(), fileName, "RechargeOrderList");
-        log.info("payspherepay exportRechargeOrderList uploadObject={}", uploadObject);
+        log.info("spherepay exportRechargeOrderList uploadObject={}", uploadObject);
         return uploadObject;
     }
 }

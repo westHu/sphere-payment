@@ -86,7 +86,7 @@ public class TradeTransferOrderQueryServiceImpl extends AbstractTradeOrderQueryS
         // 上传谷歌
         String fileName = StorageUtil.exportCsvFile("transfer-");
         String uploadObject = null;//'storageHandler.uploadObject(csvDTOList, param.getOperator(), fileName, "TransferOrderList");
-        log.info("payspherepay exportTransferOrderList uploadObject={}", uploadObject);
+        log.info("spherepay exportTransferOrderList uploadObject={}", uploadObject);
         return uploadObject;
     }
 

@@ -31,9 +31,9 @@ public class TradeConstant {
     /**
      * job
      */
-    public static final String JOB_NAME_TRADE_FILE = "paysphereTradeFileHandler";
-    public static final String JOB_NAME_TRADE_PAY_TIMEOUT = "paysphereTradePayOrderTimeOutHandler";
-    public static final String JOB_NAME_TRADE_STATISTICS = "paysphereTradeStatisticsHandler";
+    public static final String JOB_NAME_TRADE_FILE = "sphereTradeFileHandler";
+    public static final String JOB_NAME_TRADE_PAY_TIMEOUT = "sphereTradePayOrderTimeOutHandler";
+    public static final String JOB_NAME_TRADE_STATISTICS = "sphereTradeStatisticsHandler";
 
 
     /**
@@ -56,8 +56,8 @@ public class TradeConstant {
     /**
      * paymentLink
      */
-    public static final String PAYMENT_LINK_EMAIL_SUFFIX = "@paysphere.com";
-    public static final String PAYMENT_LINK_REDIRECT = "https:// pay.payspherepay.id";
+    public static final String PAYMENT_LINK_EMAIL_SUFFIX = "@sphere.com";
+    public static final String PAYMENT_LINK_REDIRECT = "https:// pay.spherepay.id";
 
     /**
      * cashier

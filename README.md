@@ -1,15 +1,15 @@
-# paysphere-trade
+# sphere-trade
 
     交易系统
 
 ## 组件构成
 
-* **paysphere-start**：
-* **paysphere-api**：
-* **paysphere-application**：
-* **paysphere-domain**：
-* **paysphere-infrastructure**：
-* **paysphere-share**：
+* **sphere-start**：
+* **sphere-api**：
+* **sphere-application**：
+* **sphere-domain**：
+* **sphere-infrastructure**：
+* **sphere-share**：
 
 
 

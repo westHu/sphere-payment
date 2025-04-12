@@ -311,7 +311,7 @@ public class SandBoxTradePayoutOrderCmdServiceImpl implements SandBoxTradeCashOr
             // 校验参数
             String errorMsg = ValidationUtil.getErrorMsg(dto);
             if (StringUtils.isNotBlank(errorMsg)) {
-                log.error("paysphere sandboxCallback validation tradeNo={} errorMsg={}", tradeNo, errorMsg);
+                log.error("sphere sandboxCallback validation tradeNo={} errorMsg={}", tradeNo, errorMsg);
                 throw new PaymentException(ExceptionCode.SYSTEM_BUSY, errorMsg);
             }
 

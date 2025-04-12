@@ -4,7 +4,7 @@
 <configuration debug="false">
 
     <springProperty scope="context" name="LOG_HOME" source="logging.file.path" defaultValue="logs"/>
-    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="paysphere-trade"/>
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="sphere-trade"/>
     <property name="log_pattern"
               value="%d{yyyy-MM-dd HH:mm:ss.SSS Z} [%thread] %-5level %logger{50}:%line %msg%n"/>
 
