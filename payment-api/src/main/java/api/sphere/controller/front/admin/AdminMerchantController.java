@@ -1,5 +1,6 @@
 package api.sphere.controller.front.admin;
 
+import api.sphere.controller.request.MerchantAddReq;
 import api.sphere.controller.request.MerchantChannelConfigListReq;
 import api.sphere.controller.request.MerchantChannelConfigUpdateReq;
 import api.sphere.controller.request.MerchantConfigUpdateReq;
@@ -11,35 +12,37 @@ import api.sphere.controller.request.MerchantOperatorPageReq;
 import api.sphere.controller.request.MerchantOperatorUpdateReq;
 import api.sphere.controller.request.MerchantPageReq;
 import api.sphere.controller.request.MerchantPasswordResetReq;
-import api.sphere.controller.request.MerchantUpdateStatusReq;
+import api.sphere.controller.request.MerchantUpdateReq;
+import api.sphere.controller.request.MerchantVerifyReq;
 import api.sphere.controller.request.PaymentLinkSettingReq;
 import api.sphere.controller.request.SettleAccountListReq;
 import api.sphere.controller.request.TradeCallbackReq;
 import api.sphere.controller.request.UnsetGoogleCodeReq;
 import api.sphere.controller.response.MerchantBaseVO;
 import api.sphere.controller.response.MerchantOperatorVO;
-import api.sphere.convert.MerchantApiConverter;
 import api.sphere.convert.MerchantChannelConfigConverter;
 import api.sphere.convert.MerchantConfigConverter;
 import api.sphere.convert.MerchantLoginConverter;
 import api.sphere.convert.MerchantOperatorConverter;
-import api.sphere.convert.MerchantQueryConverter;
+import api.sphere.convert.MerchantConverter;
 import api.sphere.convert.SettleAccountConverter;
 import api.sphere.convert.TradeCallbackConverter;
-import app.sphere.command.MerchantApiCmdService;
+import app.sphere.command.MerchantCmdService;
 import app.sphere.command.MerchantChannelConfigCmdService;
 import app.sphere.command.MerchantConfigCmdService;
 import app.sphere.command.MerchantLoginCmdService;
 import app.sphere.command.MerchantOperatorCmdService;
 import app.sphere.command.SettleAccountCmdService;
 import app.sphere.command.TradeCallBackCmdService;
+import app.sphere.command.cmd.MerchantAddCommand;
 import app.sphere.command.cmd.MerchantChannelConfigUpdateCmd;
 import app.sphere.command.cmd.MerchantConfigUpdateCmd;
 import app.sphere.command.cmd.MerchantOperatorAddCmd;
 import app.sphere.command.cmd.MerchantOperatorUpdateCmd;
 import app.sphere.command.cmd.MerchantPasswordResetCmd;
 import app.sphere.command.cmd.MerchantUnsetGoogleCodeCmd;
-import app.sphere.command.cmd.MerchantUpdateStatusCommand;
+import app.sphere.command.cmd.MerchantUpdateCommand;
+import app.sphere.command.cmd.MerchantVerifyCommand;
 import app.sphere.command.cmd.PaymentLinkSettingCmd;
 import app.sphere.command.cmd.TradeCallbackCommand;
 import app.sphere.query.MerchantChannelConfigQueryService;
@@ -50,7 +53,6 @@ import app.sphere.query.MerchantQueryService;
 import app.sphere.query.MerchantStatisticsQueryService;
 import app.sphere.query.MerchantWithdrawConfigQueryService;
 import app.sphere.query.SettleAccountQueryService;
-import app.sphere.query.dto.MerchantBaseDTO;
 import app.sphere.query.dto.MerchantChannelConfigListDTO;
 import app.sphere.query.dto.MerchantConfigDTO;
 import app.sphere.query.dto.MerchantDropDTO;
@@ -84,7 +86,6 @@ import share.sphere.enums.QuerySourceEnum;
 import share.sphere.result.PageResult;
 import share.sphere.result.Result;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -106,11 +107,9 @@ public class AdminMerchantController {
     @Resource
     MerchantQueryService merchantQueryService;
     @Resource
-    MerchantQueryConverter merchantQueryConverter;
+    MerchantConverter merchantConverter;
     @Resource
-    MerchantApiCmdService merchantApiCmdService;
-    @Resource
-    MerchantApiConverter merchantApiConverter;
+    MerchantCmdService merchantCmdService;
     @Resource
     MerchantConfigQueryService merchantConfigQueryService;
     @Resource
@@ -149,6 +148,40 @@ public class AdminMerchantController {
     SettleAccountQueryService settleAccountQueryService;
 
     // ============== 商户基本信息管理 ==============
+    /**
+     * 新增商户
+     */
+    @PostMapping("/v1/addMerchant")
+    public Mono<Result<Boolean>> addMerchant(@RequestBody @Validated MerchantAddReq req) {
+        log.info("新增商, req={}", JSONUtil.toJsonStr(req));
+        MerchantAddCommand command = merchantConverter.convertMerchantAddCommand(req);
+        boolean addMerchant = merchantCmdService.addMerchant(command);
+        return Mono.just(Result.ok(addMerchant));
+    }
+
+    /**
+     * 新增商户
+     */
+    @PostMapping("/v1/verifyMerchant")
+    public Mono<Result<Boolean>> verifyMerchant(@RequestBody @Validated MerchantVerifyReq req) {
+        log.info("新增商, req={}", JSONUtil.toJsonStr(req));
+        MerchantVerifyCommand command = merchantConverter.convertMerchantVerifyCommand(req);
+        boolean addMerchant = merchantCmdService.verifyMerchant(command);
+        return Mono.just(Result.ok(addMerchant));
+    }
+
+    /**
+     * 更新商户
+     * 可用于启用/禁用商户
+     */
+    @PostMapping("/v1/updateMerchant")
+    public Mono<Result<Boolean>> updateMerchant(@RequestBody @Validated MerchantUpdateReq req) {
+        log.info("更新商户状态, merchantId={}, status={}", req.getMerchantId(), req.getStatus());
+        req.setQuerySource(QuerySourceEnum.ADMIN.getCode());
+        MerchantUpdateCommand command = merchantConverter.convertMerchantUpdateStatusCommand(req);
+        boolean updated = merchantCmdService.updateMerchant(command);
+        return Mono.just(Result.ok(updated));
+    }
 
     /**
      * 分页查询商户列表
@@ -157,10 +190,10 @@ public class AdminMerchantController {
     @PostMapping("/v1/pageBaseMerchantList")
     public Mono<PageResult<MerchantBaseVO>> pageBaseMerchantList(@RequestBody @Validated MerchantPageReq req) {
         log.info("分页查询商户列表, req={}", JSONUtil.toJsonStr(req));
-        MerchantPageParam param = merchantQueryConverter.convertMerchantPageParam(req);
+        MerchantPageParam param = merchantConverter.convertMerchantPageParam(req);
 
         Page<Merchant> page = merchantQueryService.pageBaseMerchantList(param);
-        List<MerchantBaseVO> voList = merchantQueryConverter.convertMerchantBaseVOList(page.getRecords());
+        List<MerchantBaseVO> voList = merchantConverter.convertMerchantBaseVOList(page.getRecords());
         return Mono.just(PageResult.ok(page.getTotal(), page.getCurrent(), voList));
 
     }
@@ -175,7 +208,7 @@ public class AdminMerchantController {
         param.setMerchantId(req.getMerchantId());
 
         Merchant merchant = merchantQueryService.getMerchant(param);
-        MerchantBaseVO vo = merchantQueryConverter.convertMerchantBaseVO(merchant);
+        MerchantBaseVO vo = merchantConverter.convertMerchantBaseVO(merchant);
         return Mono.just(Result.ok(vo));
     }
 
@@ -186,22 +219,9 @@ public class AdminMerchantController {
     @PostMapping("/v1/dropMerchantList")
     public Mono<Result<List<MerchantDropDTO>>> dropMerchantList(@RequestBody MerchantDropListReq req) {
         log.info("获取商户下拉列表, req={}", JSONUtil.toJsonStr(req));
-        MerchantDropListParam param = merchantQueryConverter.convertMerchantDropListParam(req);
+        MerchantDropListParam param = merchantConverter.convertMerchantDropListParam(req);
         List<MerchantDropDTO> list = merchantQueryService.dropMerchantList(param);
         return Mono.just(Result.ok(list));
-    }
-
-    /**
-     * 更新商户状态
-     * 用于启用/禁用商户
-     */
-    @PostMapping("/v1/updateMerchantStatus")
-    public Mono<Result<Boolean>> updateMerchantStatus(@RequestBody @Validated MerchantUpdateStatusReq req) {
-        log.info("更新商户状态, merchantId={}, status={}", req.getMerchantId(), req.getStatus());
-        req.setQuerySource(QuerySourceEnum.ADMIN.getCode());
-        MerchantUpdateStatusCommand command = merchantApiConverter.convertMerchantUpdateStatusCommand(req);
-        boolean updated = merchantApiCmdService.updateMerchantStatus(command);
-        return Mono.just(Result.ok(updated));
     }
 
     // ============== 商户配置管理 ==============

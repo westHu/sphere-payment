@@ -63,6 +63,11 @@ public class Merchant extends BaseEntity {
      */
     private List<String> currencyList;
 
+    /**
+     * 商户标签
+     */
+    private List<String> tags;
+
     // ============== 状态控制 ==============
     /**
      * 商户状态

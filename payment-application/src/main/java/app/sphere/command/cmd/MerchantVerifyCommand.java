@@ -3,15 +3,13 @@ package app.sphere.command.cmd;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * 商户更新
- */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class MerchantUpdateStatusCommand extends MerchantIdCommand{
+public class MerchantVerifyCommand extends OperatorCommand {
 
     /**
-     * 商户状态
+     * 商户ID
      */
-    private Integer status;
+    private String merchantId;
+
 }

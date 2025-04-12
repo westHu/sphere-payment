@@ -3,6 +3,7 @@ package api.sphere.controller.front.admin;
 import api.sphere.controller.request.SysLoginReq;
 import api.sphere.controller.request.SysPermissionReq;
 import api.sphere.controller.request.SysRoleAddReq;
+import api.sphere.controller.request.SysRoleAssignPermissionReq;
 import api.sphere.controller.request.SysRolePageReq;
 import api.sphere.controller.request.SysRoleUpdateReq;
 import api.sphere.controller.request.SysUserAddReq;
@@ -12,8 +13,10 @@ import api.sphere.convert.SysUserRoleConverter;
 import app.sphere.command.SysUserRoleCmdService;
 import app.sphere.command.cmd.SysLoginCommand;
 import app.sphere.command.cmd.SysRoleAddCommand;
+import app.sphere.command.cmd.SysRoleAssignPermissionCommand;
 import app.sphere.command.cmd.SysRoleUpdateCommand;
 import app.sphere.command.cmd.SysUserAddCommand;
+import app.sphere.command.cmd.SysUserAssignRoleCommand;
 import app.sphere.command.cmd.SysUserUpdateCommand;
 import app.sphere.command.dto.SysLoginDTO;
 import app.sphere.query.SysUserRoleQueryService;
@@ -25,8 +28,6 @@ import app.sphere.query.param.SysPermissionParam;
 import app.sphere.query.param.SysRolePageParam;
 import app.sphere.query.param.SysUserPageParam;
 import cn.hutool.json.JSONUtil;
-import infrastructure.sphere.db.entity.SysRole;
-import infrastructure.sphere.db.entity.SysPermission;
 import domain.sphere.repository.SysUserRepository;
 import domain.sphere.repository.SysRoleRepository;
 import domain.sphere.repository.SysPermissionRepository;
@@ -46,7 +47,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/admin")
-public class AdminBaseController {
+public class AdminAuthController {
 
     @Resource
     SysUserRoleCmdService sysUserRoleCmdService;
@@ -96,19 +97,27 @@ public class AdminBaseController {
 
     // 用户管理接口
     @PostMapping("/addUser")
-    public Result<Void> addUser(@RequestBody SysUserAddReq req) {
+    public Result<Boolean> addUser(@RequestBody SysUserAddReq req) {
         log.info("新增用户管理接口, req={}", JSONUtil.toJsonStr(req));
         SysUserAddCommand command = sysUserRoleConverter.convertSysUserAddCommand(req);
-        sysUserRoleCmdService.addUser(command);
-        return Result.ok(null);
+        boolean addUser = sysUserRoleCmdService.addUser(command);
+        return Result.ok(addUser);
     }
 
     @PostMapping("/updateUser")
-    public Result<Void> updateUser(@RequestBody SysUserUpdateReq req) {
+    public Result<Boolean> updateUser(@RequestBody SysUserUpdateReq req) {
         log.info("更新用户管理接口, req={}", JSONUtil.toJsonStr(req));
         SysUserUpdateCommand command = sysUserRoleConverter.convertSysUserUpdateCommand(req);
-        sysUserRoleCmdService.updateUser(command);
-        return Result.ok(null);
+        boolean updateUser = sysUserRoleCmdService.updateUser(command);
+        return Result.ok(updateUser);
+    }
+
+    @PostMapping("/assignRole")
+    public Result<Boolean> assignRole(@RequestBody SysUserUpdateReq req) {
+        log.info("更新用户管理接口, req={}", JSONUtil.toJsonStr(req));
+        SysUserAssignRoleCommand command = sysUserRoleConverter.convertSysUserAssignRoleCommand(req);
+        boolean updateUser = sysUserRoleCmdService.assignRole(command);
+        return Result.ok(updateUser);
     }
 
     @PostMapping("/pageUserList")
@@ -128,19 +137,27 @@ public class AdminBaseController {
 
     // 角色管理接口
     @PostMapping("/addRole")
-    public Result<Void> addRole(@RequestBody SysRoleAddReq req) {
+    public Result<Boolean> addRole(@RequestBody SysRoleAddReq req) {
         log.info("新增角色管理接口, req={}", JSONUtil.toJsonStr(req));
         SysRoleAddCommand command = sysUserRoleConverter.convertSysRoleAddCommand(req);
-        sysUserRoleCmdService.addRole(command);
-        return Result.ok(null);
+        boolean addRole = sysUserRoleCmdService.addRole(command);
+        return Result.ok(addRole);
     }
 
-    @PostMapping("/role/update")
-    public Result<Void> updateRole(@RequestBody SysRoleUpdateReq req) {
+    @PostMapping("/updateRole")
+    public Result<Boolean> updateRole(@RequestBody SysRoleUpdateReq req) {
         log.info("更新角色管理接口, req={}", JSONUtil.toJsonStr(req));
         SysRoleUpdateCommand command = sysUserRoleConverter.convertSysRoleUpdateCommand(req);
-        sysUserRoleCmdService.updateRole(command);
-        return Result.ok(null);
+        boolean updateRole = sysUserRoleCmdService.updateRole(command);
+        return Result.ok(updateRole);
+    }
+
+    @PostMapping("/assignPermission")
+    public Result<Boolean> assignPermission(@RequestBody SysRoleAssignPermissionReq req) {
+        log.info("更新角色管理接口, req={}", JSONUtil.toJsonStr(req));
+        SysRoleAssignPermissionCommand command = sysUserRoleConverter.convertSysRoleAssignPermissionCommand(req);
+        boolean updateRole = sysUserRoleCmdService.assignPermission(command);
+        return Result.ok(updateRole);
     }
 
     @PostMapping("/pageRoleList")

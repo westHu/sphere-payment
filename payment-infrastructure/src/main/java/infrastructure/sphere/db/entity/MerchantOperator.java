@@ -52,13 +52,7 @@ public class MerchantOperator extends BaseEntity {
      * 最近密码更新时间
      * 记录密码最后修改时间，用于密码策略控制
      */
-    private LocalDateTime lastPasswordUpdateTime;
-
-    /**
-     * 最近交易密码更新时间
-     * 记录交易密码最后修改时间，用于密码策略控制
-     */
-    private LocalDateTime lastTradePasswordUpdateTime;
+    private Long lastPasswordUpdateTime;
 
     // ============== 状态控制 ==============
     /**

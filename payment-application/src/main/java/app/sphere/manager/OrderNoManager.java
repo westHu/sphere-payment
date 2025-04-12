@@ -24,6 +24,14 @@ import static share.sphere.TradeConstant.DF_2;
 public class OrderNoManager {
 
     /**
+     * 平台号
+     */
+    public String getMerchantId(Long id) {
+        long base = 100000000 + id;
+        return String.valueOf(base);
+    }
+
+    /**
      * 商户账户号
      */
     public String getAccountNo(String currency, String merchantId) {

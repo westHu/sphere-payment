@@ -3,8 +3,10 @@ package api.sphere.controller.request;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-public class SysRoleAddReq {
+public class SysRoleAssignPermissionReq {
 
     /**
      * 角色编码
@@ -13,14 +15,7 @@ public class SysRoleAddReq {
     private String roleCode;
 
     /**
-     * 角色名称
+     * 权限Id列表
      */
-    @NotBlank(message = "roleName is required")
-    private String roleName;
-
-    /**
-     * 角色描述
-     */
-    @NotBlank(message = "description is required")
-    private String description;
+    private List<Long> permissionIdList;
 }

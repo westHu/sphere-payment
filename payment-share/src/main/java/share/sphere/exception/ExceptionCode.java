@@ -55,6 +55,7 @@ public enum ExceptionCode {
     SETTLE_ACCOUNT_HAS_EXIST(220002, "账户已存在:{1}"),
 
     // 商户相关错误 (40xxxx)
+    //商户已存在
     MERCHANT_NOT_FOUND(400001, "商户不存在"),
     MERCHANT_HAS_EXIST(400001, "商户已存在"),
     MERCHANT_DISABLED(400002, "商户已禁用"),
@@ -88,6 +89,8 @@ public enum ExceptionCode {
     RISK_RULE_MISSING(610001, "风控规则缺失"),
     RISK_INTERCEPT_ERROR(620001, "风控拦截错误");
 
+    //add
+    //审核不能同一个人
     private final Integer code;
     private final String message;
 

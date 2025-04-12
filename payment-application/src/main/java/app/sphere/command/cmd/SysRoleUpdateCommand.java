@@ -22,7 +22,7 @@ public class SysRoleUpdateCommand {
     /**
      * 状态(0-禁用 1-启用)
      */
-    private boolean status;
+    private Boolean status;
 
     /**
      * 排序

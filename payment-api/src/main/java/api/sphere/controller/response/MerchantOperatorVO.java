@@ -45,6 +45,6 @@ public class MerchantOperatorVO {
     /**
      * 最近密码更新时间
      */
-    private LocalDateTime lastPasswordUpdateTime;
+    private Long lastPasswordUpdateTime;
 
 }

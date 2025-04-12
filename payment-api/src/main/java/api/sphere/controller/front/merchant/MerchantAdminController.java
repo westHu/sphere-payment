@@ -91,7 +91,7 @@ public class MerchantAdminController {
 
     // ===================== 转换器 =====================
     @Resource
-    MerchantQueryConverter merchantQueryConverter;
+    MerchantConverter merchantConverter;
     @Resource
     MerchantConfigConverter merchantConfigConverter;
     @Resource
@@ -131,7 +131,7 @@ public class MerchantAdminController {
         param.setMerchantId(req.getMerchantId());
 
         Merchant merchant = merchantQueryService.getMerchant(param);
-        MerchantBaseVO vo = merchantQueryConverter.convertMerchantBaseVO(merchant);
+        MerchantBaseVO vo = merchantConverter.convertMerchantBaseVO(merchant);
         return Mono.just(Result.ok(vo));
     }
 

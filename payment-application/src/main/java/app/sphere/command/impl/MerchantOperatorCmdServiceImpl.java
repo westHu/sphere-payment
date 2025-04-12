@@ -51,8 +51,7 @@ public class MerchantOperatorCmdServiceImpl implements MerchantOperatorCmdServic
         mOperator.setMerchantId(cmd.getMerchantId());
         mOperator.setUsername(username);
         mOperator.setPassword(password);
-        mOperator.setLastPasswordUpdateTime(LocalDateTime.now());
-        mOperator.setLastTradePasswordUpdateTime(LocalDateTime.now());
+        mOperator.setLastPasswordUpdateTime(System.currentTimeMillis());
         mOperator.setGoogleCode(null);
         mOperator.setStatus(true);
         return merchantOperatorRepository.save(mOperator);

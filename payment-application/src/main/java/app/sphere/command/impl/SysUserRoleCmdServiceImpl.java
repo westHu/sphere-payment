@@ -3,18 +3,28 @@ package app.sphere.command.impl;
 import app.sphere.command.SysUserRoleCmdService;
 import app.sphere.command.cmd.SysLoginCommand;
 import app.sphere.command.cmd.SysRoleAddCommand;
+import app.sphere.command.cmd.SysRoleAssignPermissionCommand;
 import app.sphere.command.cmd.SysRoleUpdateCommand;
 import app.sphere.command.cmd.SysUserAddCommand;
+import app.sphere.command.cmd.SysUserAssignRoleCommand;
 import app.sphere.command.cmd.SysUserUpdateCommand;
 import app.sphere.command.dto.SysLoginDTO;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.crypto.digest.MD5;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import domain.sphere.repository.SysPermissionRepository;
+import domain.sphere.repository.SysRolePermissionRepository;
 import domain.sphere.repository.SysRoleRepository;
 import domain.sphere.repository.SysUserRepository;
+import domain.sphere.repository.SysUserRoleRepository;
+import infrastructure.sphere.db.entity.BaseEntity;
+import infrastructure.sphere.db.entity.SysPermission;
 import infrastructure.sphere.db.entity.SysRole;
+import infrastructure.sphere.db.entity.SysRolePermission;
 import infrastructure.sphere.db.entity.SysUser;
+import infrastructure.sphere.db.entity.SysUserRole;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,19 +35,28 @@ import share.sphere.utils.dto.JWTTokenUserDTO;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static share.sphere.TradeConstant.LIMIT_1;
 
 @Slf4j
 @Service
 public class SysUserRoleCmdServiceImpl implements SysUserRoleCmdService {
 
     @Resource
-    private SysUserRepository sysUserRepository;
-    
+    SysUserRepository sysUserRepository;
     @Resource
-    private SysRoleRepository sysRoleRepository;
-    
+    SysRoleRepository sysRoleRepository;
     @Resource
-    private BCryptPasswordEncoder passwordEncoder;
+    SysPermissionRepository sysPermissionRepository;
+    @Resource
+    SysUserRoleRepository sysUserRoleRepository;
+    @Resource
+    SysRolePermissionRepository sysRolePermissionRepository;
+    @Resource
+    BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public SysLoginDTO sysLogin(SysLoginCommand cmd) {
@@ -79,12 +98,8 @@ public class SysUserRoleCmdServiceImpl implements SysUserRoleCmdService {
     }
 
     @Override
-    public void addUser(SysUserAddCommand command) {
+    public boolean addUser(SysUserAddCommand command) {
         log.info("添加系统用户, command={}", JSONUtil.toJsonStr(command));
-
-        // 1. 参数校验
-        Assert.notBlank(command.getUsername(), () -> new PaymentException(ExceptionCode.PARAM_MISSING, "用户名不能为空"));
-        Assert.notBlank(command.getPassword(), () -> new PaymentException(ExceptionCode.PARAM_MISSING, "密码不能为空"));
 
         // 2. 检查用户名是否已存在
         QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
@@ -93,26 +108,24 @@ public class SysUserRoleCmdServiceImpl implements SysUserRoleCmdService {
         Assert.isNull(existUser, () -> new PaymentException(ExceptionCode.USER_HAS_EXIST, command.getUsername()));
 
         // 3. 创建用户对象
+        String password = passwordEncoder.encode(MD5.create().digestHex16(command.getPassword()));
         SysUser user = new SysUser();
         user.setUsername(command.getUsername());
-        user.setPassword(passwordEncoder.encode(command.getPassword()));
+        user.setPassword(password);
         user.setRealName(command.getRealName());
         user.setMobile(command.getMobile());
-        user.setStatus(true); // 默认启用
+        user.setStatus(true);
         user.setCreateTime(LocalDateTime.now());
-        user.setUpdateTime(LocalDateTime.now());
 
         // 4. 保存用户
         boolean success = sysUserRepository.save(user);
         Assert.isTrue(success, () -> new PaymentException(ExceptionCode.SYSTEM_ERROR, "添加用户失败"));
+        return success;
     }
 
     @Override
-    public void updateUser(SysUserUpdateCommand command) {
+    public boolean updateUser(SysUserUpdateCommand command) {
         log.info("更新系统用户, command={}", JSONUtil.toJsonStr(command));
-
-        // 1. 参数校验
-        Assert.notBlank(command.getUsername(), () -> new PaymentException(ExceptionCode.PARAM_MISSING, "用户名不能为空"));
 
         // 2. 查询用户是否存在
         QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
@@ -123,40 +136,40 @@ public class SysUserRoleCmdServiceImpl implements SysUserRoleCmdService {
         // 3. 构建更新条件
         UpdateWrapper<SysUser> updateWrapper = new UpdateWrapper<>();
         updateWrapper.lambda()
-                .eq(SysUser::getUsername, command.getUsername());
-
-        // 4. 更新密码（如果提供了新密码）
-        if (command.getPassword() != null && !command.getPassword().isEmpty()) {
-            updateWrapper.lambda()
-                    .set(SysUser::getPassword, passwordEncoder.encode(command.getPassword()));
-        }
-
-        // 5. 更新其他字段
-        if (command.getRealName() != null) {
-            updateWrapper.lambda()
-                    .set(SysUser::getRealName, command.getRealName());
-        }
-
-        if (command.getStatus() != null) {
-            updateWrapper.set("status", command.getStatus());
-        }
-
-        // 6. 设置更新时间
-        updateWrapper.lambda()
-                .set(SysUser::getUpdateTime, LocalDateTime.now());
-
+                .set(Objects.nonNull(command.getRealName()), SysUser::getRealName, command.getRealName())
+                .set(Objects.nonNull(command.getStatus()), SysUser::isStatus, command.getStatus())
+                .set(Objects.nonNull(command.getPassword()), SysUser::getPassword,
+                        passwordEncoder.encode(MD5.create().digestHex16(command.getPassword())));
         // 7. 执行更新
         boolean success = sysUserRepository.update(updateWrapper);
         Assert.isTrue(success, () -> new PaymentException(ExceptionCode.SYSTEM_ERROR, "更新用户失败"));
+        return success;
     }
 
     @Override
-    public void addRole(SysRoleAddCommand command) {
-        log.info("添加系统角色, command={}", JSONUtil.toJsonStr(command));
+    public boolean assignRole(SysUserAssignRoleCommand command) {
+        log.info("assignRole, command={}", JSONUtil.toJsonStr(command));
 
-        // 1. 参数校验
-        Assert.notBlank(command.getRoleCode(), () -> new PaymentException(ExceptionCode.PARAM_MISSING, "角色编码不能为空"));
-        Assert.notBlank(command.getRoleName(), () -> new PaymentException(ExceptionCode.PARAM_MISSING, "角色名称不能为空"));
+        // 2. 查询用户是否存在
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SysUser::getUsername, command.getUsername());
+        SysUser user = sysUserRepository.getOne(queryWrapper);
+        Assert.notNull(user, () -> new PaymentException(ExceptionCode.USER_NOT_FOUND, command.getUsername()));
+
+        List<SysRole> roleList = sysRoleRepository.listByIds(command.getRoleIdList());
+        List<Long> roleIdList = roleList.stream().map(BaseEntity::getId).toList();
+        List<SysUserRole> userRoleList = roleIdList.stream().map(e -> {
+            SysUserRole userRole = new SysUserRole();
+            userRole.setUserId(user.getId());
+            userRole.setRoleId(e);
+            return userRole;
+        }).toList();
+        return sysUserRoleRepository.saveBatch(userRoleList);
+    }
+
+    @Override
+    public boolean addRole(SysRoleAddCommand command) {
+        log.info("添加系统角色, command={}", JSONUtil.toJsonStr(command));
 
         // 2. 检查角色编码是否已存在
         QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
@@ -172,58 +185,55 @@ public class SysUserRoleCmdServiceImpl implements SysUserRoleCmdService {
         role.setStatus(true); // 默认启用
         role.setSort(0); // 默认排序
         role.setCreateTime(LocalDateTime.now());
-        role.setUpdateTime(LocalDateTime.now());
 
         // 4. 保存角色
         boolean success = sysRoleRepository.save(role);
         Assert.isTrue(success, () -> new PaymentException(ExceptionCode.SYSTEM_ERROR, "添加角色失败"));
+        return success;
     }
 
     @Override
-    public void updateRole(SysRoleUpdateCommand command) {
+    public boolean updateRole(SysRoleUpdateCommand command) {
         log.info("更新系统角色, command={}", JSONUtil.toJsonStr(command));
-
-        // 1. 参数校验
-        Assert.notBlank(command.getRoleCode(), () -> new PaymentException(ExceptionCode.PARAM_MISSING, "角色编码不能为空"));
 
         // 2. 查询角色是否存在
         QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SysRole::getRoleCode, command.getRoleCode());
+        queryWrapper.lambda().eq(SysRole::getRoleCode, command.getRoleCode()).last(LIMIT_1);
         SysRole role = sysRoleRepository.getOne(queryWrapper);
         Assert.notNull(role, () -> new PaymentException(ExceptionCode.SYSTEM_ERROR, "角色不存在: " + command.getRoleCode()));
 
         // 3. 构建更新条件
         UpdateWrapper<SysRole> updateWrapper = new UpdateWrapper<>();
         updateWrapper.lambda()
+                .set(Objects.nonNull(command.getRoleName()), SysRole::getRoleName, command.getRoleName())
+                .set(Objects.nonNull(command.getDescription()), SysRole::getDescription, command.getDescription())
+                .set(Objects.nonNull(command.getStatus()), SysRole::isStatus, command.getStatus())
                 .eq(SysRole::getRoleCode, command.getRoleCode());
-
-        // 4. 更新角色名称（如果提供了新名称）
-        if (command.getRoleName() != null && !command.getRoleName().isEmpty()) {
-            updateWrapper.lambda()
-                    .set(SysRole::getRoleName, command.getRoleName());
-        }
-
-        // 5. 更新角色描述（如果提供了新描述）
-        if (command.getDescription() != null) {
-            updateWrapper.lambda()
-                    .set(SysRole::getDescription, command.getDescription());
-        }
-
-        // 6. 更新状态
-        updateWrapper.set("status", command.isStatus());
-
-        // 7. 更新排序（如果提供了新排序）
-        if (command.getSort() != null) {
-            updateWrapper.lambda()
-                    .set(SysRole::getSort, command.getSort());
-        }
-
-        // 8. 设置更新时间
-        updateWrapper.lambda()
-                .set(SysRole::getUpdateTime, LocalDateTime.now());
-
         // 9. 执行更新
         boolean success = sysRoleRepository.update(updateWrapper);
         Assert.isTrue(success, () -> new PaymentException(ExceptionCode.SYSTEM_ERROR, "更新角色失败"));
+        return success;
+    }
+
+    @Override
+    public boolean assignPermission(SysRoleAssignPermissionCommand command) {
+        log.info("assignRole, command={}", JSONUtil.toJsonStr(command));
+
+        // 2. 查询用户是否存在
+        QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SysRole::getRoleCode, command.getRoleCode()).last(LIMIT_1);
+        SysRole role = sysRoleRepository.getOne(queryWrapper);
+        Assert.notNull(role, () -> new PaymentException(ExceptionCode.SYSTEM_ERROR, "角色不存在: " + command.getRoleCode()));
+
+        List<SysPermission> permissionList = sysPermissionRepository.listByIds(command.getPermissionIdList());
+        List<Long> permissionIdList = permissionList.stream().map(BaseEntity::getId).toList();
+        List<SysRolePermission> rolePermissionList = permissionIdList.stream().map(e -> {
+            SysRolePermission rolePermission = new SysRolePermission();
+            rolePermission.setRoleId(role.getId());
+            rolePermission.setPermissionId(e);
+            return rolePermission;
+        }).toList();
+        return sysRolePermissionRepository.saveBatch(rolePermissionList);
+
     }
 }

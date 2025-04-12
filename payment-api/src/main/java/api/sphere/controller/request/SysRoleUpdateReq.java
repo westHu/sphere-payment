@@ -1,12 +1,15 @@
 package api.sphere.controller.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class SysRoleUpdateReq {
+
     /**
      * 角色编码
      */
+    @NotBlank(message = "roleCode is required")
     private String roleCode;
 
     /**
