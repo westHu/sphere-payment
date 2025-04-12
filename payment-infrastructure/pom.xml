@@ -3,8 +3,8 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>paysphere-payment</artifactId>
-        <groupId>com.paysphere</groupId>
+        <artifactId>sphere-payment</artifactId>
+        <groupId>com.sphere</groupId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -22,6 +22,12 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
+        <!-- Spring Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
         <!--mybatis plus-->
@@ -43,26 +49,6 @@
             <version>${mysql.version}</version>
         </dependency>
 
-        <!--redis-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-
-        <!--rocketmq-->
-        <dependency>
-            <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-spring-boot-starter</artifactId>
-            <version>2.2.3</version>
-        </dependency>
-
-        <!-- xxl-job -->
-        <dependency>
-            <groupId>com.xuxueli</groupId>
-            <artifactId>xxl-job-core</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-
         <!--storage-->
         <dependency>
             <groupId>com.google.cloud</groupId>
@@ -71,7 +57,7 @@
 
         <!-- project-->
         <dependency>
-            <groupId>com.paysphere</groupId>
+            <groupId>com.sphere</groupId>
             <artifactId>payment-share</artifactId>
         </dependency>
 

@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>paysphere-payment</artifactId>
-        <groupId>com.paysphere</groupId>
+        <artifactId>sphere-payment</artifactId>
+        <groupId>com.sphere</groupId>
         <version>1.0.0</version>
     </parent>
 
@@ -21,7 +21,7 @@
 
         <!--project-->
         <dependency>
-            <groupId>com.paysphere</groupId>
+            <groupId>com.sphere</groupId>
             <artifactId>payment-application</artifactId>
         </dependency>
 

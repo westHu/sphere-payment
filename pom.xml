@@ -10,13 +10,13 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.paysphere</groupId>
-    <artifactId>paysphere-payment</artifactId>
+    <groupId>com.sphere</groupId>
+    <artifactId>sphere-payment</artifactId>
     <version>1.0.0</version>  <!--版本控制变更 7处-->
     <packaging>pom</packaging>
 
-    <name>paysphere-payment</name>
-    <description>paysphere-payment project</description>
+    <name>sphere-payment</name>
+    <description>sphere-payment project</description>
 
     <modules>
         <module>payment-api</module>
@@ -114,32 +114,32 @@
 
             <!-- project-->
             <dependency>
-                <groupId>com.paysphere</groupId>
+                <groupId>com.sphere</groupId>
                 <artifactId>payment-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.paysphere</groupId>
+                <groupId>com.sphere</groupId>
                 <artifactId>payment-application</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.paysphere</groupId>
+                <groupId>com.sphere</groupId>
                 <artifactId>payment-domain</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.paysphere</groupId>
+                <groupId>com.sphere</groupId>
                 <artifactId>payment-infrastructure</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.paysphere</groupId>
+                <groupId>com.sphere</groupId>
                 <artifactId>payment-share</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.paysphere</groupId>
+                <groupId>com.sphere</groupId>
                 <artifactId>payment-start</artifactId>
                 <version>${project.version}</version>
             </dependency>
