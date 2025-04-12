@@ -1,0 +1,36 @@
+server:
+  shutdown: graceful
+  servlet:
+    context-path: /trade
+  undertow:
+    buffer-size: 16364
+    directBuffers: true
+    threads:
+      worker: 128
+    max-http-post-size: -1B
+    eager-filter-init: true
+    max-parameters: 1000
+    max-headers: 200
+    max-cookies: 200
+    allow-encoded-slash: false
+    decode-url: true
+    url-charset: utf-8
+    always-set-keep-alive: true
+    no-request-timeout: -1
+    preserve-path-on-forward: false
+
+spring:
+  application:
+    name: sphere-trade
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  datasource: 
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: HikariCP-Trade
+      keepalive-time: 60000
+      max-lifetime: 1800000
+      maximum-pool-size: 8
+      connection-test-query: select 1
+  profiles:
+    active: dev
