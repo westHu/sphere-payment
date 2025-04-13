@@ -6,6 +6,7 @@ import app.sphere.command.cmd.callback.MockDisbursementCallBackCommand;
 import app.sphere.command.cmd.callback.MockTransactionCallBackCommand;
 import app.sphere.command.dto.trade.result.PaymentResultDTO;
 import app.sphere.command.handler.PaymentFinish4PaymentHandler;
+import app.sphere.command.handler.PaymentFinish4PayoutHandler;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
 import cn.hutool.json.JSONUtil;
@@ -16,8 +17,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import domain.sphere.repository.PaymentCallBackMessageRepository;
 import domain.sphere.repository.TradePaymentOrderRepository;
+import domain.sphere.repository.TradePayoutOrderRepository;
 import infrastructure.sphere.db.entity.PaymentCallBackMessage;
 import infrastructure.sphere.db.entity.TradePaymentOrder;
+import infrastructure.sphere.db.entity.TradePayoutOrder;
 import infrastructure.sphere.remote.channel.BaseCallBackDTO;
 import infrastructure.sphere.remote.channel.ChannelEnum;
 import infrastructure.sphere.remote.channel.ChannelResult;
@@ -42,11 +45,15 @@ public class PaymentCallBackCmdServiceImpl implements PaymentCallBackCmdService 
     @Resource
     TradePaymentOrderRepository tradePaymentOrderRepository;
     @Resource
+    TradePayoutOrderRepository tradePayoutOrderRepository;
+    @Resource
     PaymentCallBackMessageRepository paymentCallBackMessageRepository;
     @Resource
     MockChannelService mockChannelService;
     @Resource
     PaymentFinish4PaymentHandler paymentFinish4PaymentHandler;
+    @Resource
+    PaymentFinish4PayoutHandler paymentFinish4PayoutHandler;
 
     @Override
     public String callBackTransaction4Mock(String param) {
@@ -98,7 +105,7 @@ public class PaymentCallBackCmdServiceImpl implements PaymentCallBackCmdService 
 
         //验证通过处理业务
         if (channelResult.isSuccess()) {
-            transactionCallBack(callBackDTO);
+            disbursementCallBack(callBackDTO);
         }
         return channelResult.getPayload();
     }
@@ -162,5 +169,49 @@ public class PaymentCallBackCmdServiceImpl implements PaymentCallBackCmdService 
 
         //结算、回调
         paymentFinish4PaymentHandler.handlerPaymentFinish4Payment(order);
+    }
+
+    /**
+     * 出款回调-业务处理
+     */
+    public void disbursementCallBack(BaseCallBackDTO<?> dto) {
+        String tradeNo = dto.getTradeNo();
+        String paymentNo = dto.getPaymentNo();
+        String channelOrderNo = dto.getChannelOrderNo();
+        log.error("disbursementCallBack tradeNo={}, paymentNo={}, channelOrderNo={}", tradeNo, paymentNo, channelOrderNo);
+
+        QueryWrapper<TradePayoutOrder> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .eq(StringUtils.isNotBlank(tradeNo), TradePayoutOrder::getTradeNo, tradeNo)
+                .eq(StringUtils.isNotBlank(channelOrderNo), TradePayoutOrder::getChannelOrderNo, channelOrderNo)
+                .last(LIMIT_1);
+        TradePayoutOrder order = tradePayoutOrderRepository.getOne(queryWrapper);
+        Assert.notNull(order, () -> new PaymentException("disbursementCallBack exception: order not exist"));
+
+        //如果是终态、成功/失败 则报告并忽略 if already success/failed。 receive callback again, need report
+        if (PaymentStatusEnum.getFinalStatus().contains(order.getPaymentStatus()) && !dto.isIgnoreFinalStatus()) {
+            log.error("disbursementCallBack warning : status already final status with:{}", order.getTradeNo());
+            return;
+        }
+
+        // 处理数据库
+        UpdateWrapper<TradePayoutOrder> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.lambda()
+                .set(TradePayoutOrder::getPaymentStatus, dto.getChannelStatus())
+                .set(TradePayoutOrder::getPaymentFinishTime, dto.getChannelTime());
+
+        //如果不成功，则需要把失败原因更新到remark
+        if (!PaymentStatusEnum.PAYMENT_SUCCESS.getCode().equals(dto.getChannelStatus())) {
+            PaymentResultDTO paymentResultDTO = Optional.of(order).map(TradePayoutOrder::getPaymentResult)
+                    .map(e -> JSONUtil.toBean(e, PaymentResultDTO.class))
+                    .orElse(new PaymentResultDTO());
+            paymentResultDTO.setErrorMsg(dto.getChannelError());
+            updateWrapper.lambda().set(TradePayoutOrder::getPaymentResult, JSONUtil.toJsonStr(paymentResultDTO));
+        }
+        updateWrapper.lambda().eq(TradePayoutOrder::getId, order.getId());
+        tradePayoutOrderRepository.update(updateWrapper);
+
+        //结算、回调
+        paymentFinish4PayoutHandler.handlerPayoutFinish(order);
     }
 }

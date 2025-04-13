@@ -14,6 +14,7 @@ import infrastructure.sphere.remote.channel.BaseTransactionDTO;
 import infrastructure.sphere.remote.channel.ChannelEnum;
 import infrastructure.sphere.remote.channel.ChannelResult;
 import infrastructure.sphere.remote.channel.ChannelService;
+import infrastructure.sphere.remote.channel.mock.dto.MockDisbursementResultDTO;
 import infrastructure.sphere.remote.channel.mock.dto.MockTransactionResultDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -58,12 +59,18 @@ public class MockChannelService implements ChannelService {
 
     @Override
     public ChannelResult<? extends BaseDisbursementDTO> disbursement(PaymentChannel channel, PaymentMethod paymentMethod, PaymentChannelMethod channelMethod, TradePayoutOrder order) {
-        return ChannelService.super.disbursement(channel, paymentMethod, channelMethod, order);
+        log.info("Jaya transaction order={}", order.getTradeNo());
+        MockDisbursementResultDTO disbursementResultDTO = new MockDisbursementResultDTO();
+        disbursementResultDTO.setTxId(UUID.randomUUID().toString());
+        disbursementResultDTO.setStatus(1);
+        disbursementResultDTO.setMessage(null);
+        disbursementResultDTO.setChannelOrderNo(disbursementResultDTO.getTxId());
+        return new ChannelResult<>(disbursementResultDTO);
     }
 
     @Override
     public <P> ChannelResult<?> disbursementCallBack(BaseCallBackDTO<P> callBackDTO) {
-        return ChannelService.super.disbursementCallBack(callBackDTO);
+        return new ChannelResult<>(true, "SUCCESS");
     }
 
     @Override
