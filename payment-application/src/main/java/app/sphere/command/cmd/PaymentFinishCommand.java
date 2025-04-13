@@ -63,7 +63,7 @@ public class PaymentFinishCommand {
     /**
      * 完成时间
      */
-    private String transactionTime;
+    private Long transactionTime;
 
     /**
      * 通道成本

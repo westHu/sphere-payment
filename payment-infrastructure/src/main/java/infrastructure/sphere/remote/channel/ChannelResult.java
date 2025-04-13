@@ -1,4 +1,4 @@
-package infrastructure.sphere.remote;
+package infrastructure.sphere.remote.channel;
 
 import lombok.Data;
 

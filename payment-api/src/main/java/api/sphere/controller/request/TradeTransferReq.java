@@ -47,7 +47,6 @@ public class TradeTransferReq {
      */
     private String toAccountNo;
 
-
     /**
      * 币种
      */

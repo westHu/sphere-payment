@@ -1,4 +1,4 @@
-package infrastructure.sphere.remote;
+package infrastructure.sphere.remote.channel;
 
 import cn.hutool.core.lang.Assert;
 import share.sphere.exception.PaymentException;
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,15 +21,10 @@ import static share.sphere.exception.ExceptionCode.PAYMENT_ERROR;
 @Service
 public class ChannelServiceDispatcher {
 
-    private static final List<ChannelEnum> MOCK_CHANNEL_LIST = Arrays.asList(ChannelEnum.C_001);
-    private static final Map<ChannelEnum, ChannelService> channelServiceMap = new HashMap<>();
+    private static final Map<ChannelEnum, ChannelService> SERVICE_ENUM_MAP = new EnumMap<>(ChannelEnum.class);
 
     @Resource
     List<ChannelService> channelServiceList;
-
-    @Value("${spring.profiles.active}")
-    String activeEnv;
-
 
     /**
      * init
@@ -40,7 +35,7 @@ public class ChannelServiceDispatcher {
             return;
         }
 
-        channelServiceList.forEach(e -> channelServiceMap.put(e.getChannelName(), e));
+        channelServiceList.forEach(e -> SERVICE_ENUM_MAP.put(e.getChannelName(), e));
     }
 
     /**
@@ -49,12 +44,8 @@ public class ChannelServiceDispatcher {
     public ChannelService getService(ChannelEnum channelEnum) {
         String channelEnumName = channelEnum.getName();
         log.info("getService channelEnumName={}", channelEnumName);
-        if (StringUtils.equalsIgnoreCase(activeEnv, "test") && MOCK_CHANNEL_LIST.contains(channelEnum)) {
-            channelEnum = ChannelEnum.C_MOCK;
-        }
-        ChannelService channelService = channelServiceMap.get(channelEnum);
-        Assert.notNull(channelService,
-                () -> new PaymentException(PAYMENT_ERROR, "No available channel service. " + channelEnumName));
+        ChannelService channelService = SERVICE_ENUM_MAP.get(channelEnum);
+        Assert.notNull(channelService, () -> new PaymentException(PAYMENT_ERROR, "No available channel service. " + channelEnumName));
         return channelService;
     }
 }

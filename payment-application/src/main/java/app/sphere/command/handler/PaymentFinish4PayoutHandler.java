@@ -1,24 +1,18 @@
 package app.sphere.command.handler;
 
+import app.sphere.command.cmd.SettleAccountUpdateCashCommand;
 import app.sphere.command.dto.trade.callback.TradeCallBackBodyDTO;
 import app.sphere.command.dto.trade.callback.TradeCallBackDTO;
 import app.sphere.command.dto.trade.callback.TradeCallBackMoneyDTO;
 import app.sphere.command.dto.trade.result.MerchantResultDTO;
 import app.sphere.command.dto.trade.result.TradeResultDTO;
-import cn.hutool.core.lang.Assert;
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import app.sphere.command.SettleAccountCmdService;
-import app.sphere.command.cmd.PaymentFinishCommand;
-import app.sphere.command.cmd.SettleAccountUpdateSettleCommand;
 import app.sphere.command.cmd.SettleAccountUpdateUnFrozenCmd;
 import infrastructure.sphere.db.entity.TradePayoutOrder;
 import share.sphere.enums.PaymentStatusEnum;
 import share.sphere.enums.TradeModeEnum;
 import share.sphere.enums.TradePayoutSourceEnum;
-import share.sphere.enums.TradeStatusEnum;
-import share.sphere.exception.ExceptionCode;
 import share.sphere.exception.PaymentException;
 import domain.sphere.repository.TradePayoutOrderRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -38,36 +32,16 @@ import java.util.Optional;
 public class PaymentFinish4PayoutHandler {
 
     @Resource
-    TradePayoutOrderRepository tradePayoutOrderRepository;
-    @Resource
     SettleAccountCmdService settleAccountCmdService;
 
     /**
      * 代付支付结果, 更新状态、结果、时间
      */
-    public void handlerPayoutFinish(PaymentFinishCommand command) {
-        log.info("handlerPayoutFinish command={}", JSONUtil.toJsonStr(command));
-        doPaymentFinish4Payout(command);
-    }
-
-
-    //------------------------------------------------------------------------------------------------------------
-
-    /**
-     * 代付支付后操作
-     */
-    private void doPaymentFinish4Payout(PaymentFinishCommand command) {
-        //校验参数Command
-        checkCommand(command);
-
-        //查询代收订单
-        TradePayoutOrder order = queryPayoutOrder(command);
-
-        //处理订单
-        handlerPayoutOrder(command, order);
+    public void handlerPayoutFinish(TradePayoutOrder order) {
+        log.info("handlerPayoutFinish order={}", order.getTradeNo());
 
         //结算-解冻/出款
-        PaymentStatusEnum statusEnum = PaymentStatusEnum.codeToEnum(command.getPaymentStatus());
+        PaymentStatusEnum statusEnum = PaymentStatusEnum.codeToEnum(order.getPaymentStatus());
         log.info("handlerPayoutFinish statusEnum={}", statusEnum.name());
         doSettleCashOrder(order, statusEnum);
 
@@ -81,53 +55,8 @@ public class PaymentFinish4PayoutHandler {
         }
     }
 
-    /**
-     * 校验参数Command
-     */
-    private void checkCommand(PaymentFinishCommand command) {
-        String tradeNo = command.getTradeNo();
-        //传入的状态也必须是终态
-        boolean contains = PaymentStatusEnum.getFinalStatus().contains(command.getPaymentStatus());
-        Assert.isTrue(contains, () -> new PaymentException(ExceptionCode.SYSTEM_ERROR, "not final status. TradeNo to " + tradeNo));
-    }
 
-    /**
-     * 查询代付订单
-     */
-    private TradePayoutOrder queryPayoutOrder(PaymentFinishCommand command) {
-        String tradeNo = command.getTradeNo();
-
-        QueryWrapper<TradePayoutOrder> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(TradePayoutOrder::getTradeNo, tradeNo).last("LIMIT 1");
-        TradePayoutOrder order = tradePayoutOrderRepository.getOne(queryWrapper);
-        Assert.notNull(order, () -> new PaymentException(ExceptionCode.BUSINESS_PARAM_ERROR, tradeNo));
-
-        //下单成功后才操作, 否则需要重复消费
-        TradeStatusEnum tradeStatusEnum = TradeStatusEnum.codeToEnum(order.getTradeStatus());
-        boolean equals = TradeStatusEnum.TRADE_SUCCESS.equals(tradeStatusEnum);
-        Assert.isTrue(equals, () -> new PaymentException("CALLBACK_ORDER_NOT_BEEN_PLACED"));
-
-        //原订单不能是终态
-        boolean contains = PaymentStatusEnum.getFinalStatus().contains(order.getPaymentStatus());
-        Assert.isFalse(contains, () -> new PaymentException(ExceptionCode.BUSINESS_PARAM_ERROR, tradeNo));
-        return order;
-    }
-
-    /**
-     * 处理订单
-     */
-    private void handlerPayoutOrder(PaymentFinishCommand command, TradePayoutOrder order) {
-        //更新订单支付状态、结果、时间
-        order.setPaymentFinishTime(System.currentTimeMillis());
-        UpdateWrapper<TradePayoutOrder> cashOrderUpdate = new UpdateWrapper<>();
-        cashOrderUpdate.lambda()
-                .set(TradePayoutOrder::getPaymentStatus, command.getPaymentStatus())
-                .set(TradePayoutOrder::getPaymentResult, JSONUtil.toJsonStr(command))
-                .set(TradePayoutOrder::getPaymentFinishTime, order.getPaymentFinishTime())
-                .eq(TradePayoutOrder::getId, order.getId());
-        boolean update = tradePayoutOrderRepository.update(cashOrderUpdate);
-        log.info("handlerPayoutFinish update order result={}", update);
-    }
+    //------------------------------------------------------------------------------------------------------------
 
 
     /**
@@ -160,9 +89,9 @@ public class PaymentFinish4PayoutHandler {
             }
 
             // 收款清结算
-            SettleAccountUpdateSettleCommand settleCommand = new SettleAccountUpdateSettleCommand();
+            SettleAccountUpdateCashCommand settleCommand = new SettleAccountUpdateCashCommand();
             BeanUtils.copyProperties(order, settleCommand);
-            settleAccountCmdService.handlerAccountSettlement(settleCommand);
+            settleAccountCmdService.handlerAccountPayout(settleCommand);
 
         } else {
             // 解冻

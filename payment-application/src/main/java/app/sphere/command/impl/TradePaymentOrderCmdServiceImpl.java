@@ -49,11 +49,11 @@ import infrastructure.sphere.db.entity.PaymentMethod;
 import infrastructure.sphere.db.entity.SettleAccount;
 import infrastructure.sphere.db.entity.TradePaymentLinkOrder;
 import infrastructure.sphere.db.entity.TradePaymentOrder;
-import infrastructure.sphere.remote.BaseTransactionDTO;
-import infrastructure.sphere.remote.ChannelEnum;
-import infrastructure.sphere.remote.ChannelResult;
-import infrastructure.sphere.remote.ChannelService;
-import infrastructure.sphere.remote.ChannelServiceDispatcher;
+import infrastructure.sphere.remote.channel.BaseTransactionDTO;
+import infrastructure.sphere.remote.channel.ChannelEnum;
+import infrastructure.sphere.remote.channel.ChannelResult;
+import infrastructure.sphere.remote.channel.ChannelService;
+import infrastructure.sphere.remote.channel.ChannelServiceDispatcher;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -753,7 +753,6 @@ public class TradePaymentOrderCmdServiceImpl implements TradePaymentOrderCmdServ
         //发起收款
         ChannelResult<? extends BaseTransactionDTO> channelResult = channelService.transaction(channel, method, channelMethod, order);
         log.info("transaction tradeNo={} channel result={}", order.getTradeNo(), JSONUtil.toJsonStr(channelResult));
-
         return channelResult;
     }
 

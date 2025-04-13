@@ -47,8 +47,6 @@ public class TradeTransferOrderCmdServiceImpl  implements TradeTransferOrderCmdS
     @Resource
     SettleAccountCmdService settleAccountCmdService;
 
-
-
     @Override
     public boolean executeTransfer(TradeTransferCommand command) {
         log.info("executeTransfer command={}", JSONUtil.toJsonStr(command));

@@ -23,7 +23,6 @@ public class TradePaymentOrder extends BaseEntity {
     private String tradeNo;
 
     /**
-     * 外部订单号
      * 商户传入的订单号
      */
     private String orderNo;
@@ -168,6 +167,10 @@ public class TradePaymentOrder extends BaseEntity {
      */
     private String tradeResult;
 
+    /**
+     * 渠道订单号
+     */
+    private String channelOrderNo;
     /**
      * 支付状态
      * 0: 未支付

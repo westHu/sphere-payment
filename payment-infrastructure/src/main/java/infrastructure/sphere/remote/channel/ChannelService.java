@@ -1,4 +1,4 @@
-package infrastructure.sphere.remote;
+package infrastructure.sphere.remote.channel;
 
 
 import infrastructure.sphere.db.entity.PaymentChannel;
