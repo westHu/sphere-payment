@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-public class TradeCashOrderPageParam extends PageParam {
+public class TradePaymentOrderPageParam extends PageParam {
 
     /**
      * 商户ID
@@ -14,7 +14,7 @@ public class TradeCashOrderPageParam extends PageParam {
     private String merchantId;
 
     /**
-     * 商户名称
+     * 商户姓名
      */
     private String merchantName;
 
@@ -59,9 +59,9 @@ public class TradeCashOrderPageParam extends PageParam {
     private BigDecimal amountMax;
 
     /**
-     * 出款账户
+     * Va等信息
      */
-    private String cashAccount;
+    private String tradeResultVa;
 
     /**
      * 交易状态
@@ -72,11 +72,6 @@ public class TradeCashOrderPageParam extends PageParam {
      * 支付状态
      */
     private Integer paymentStatus;
-
-    /**
-     * 回调状态
-     */
-    private Integer callBackStatus;
 
     /**
      * 交易开始时间
@@ -97,4 +92,5 @@ public class TradeCashOrderPageParam extends PageParam {
      * 支付完成结束时间
      */
     private String paymentFinishEndTime;
+
 }

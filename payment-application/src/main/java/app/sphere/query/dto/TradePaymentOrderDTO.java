@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class TradePayOrderDTO {
+public class TradePaymentOrderDTO {
 
     /**
      * 订单详情

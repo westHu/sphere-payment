@@ -22,8 +22,8 @@ import api.sphere.controller.response.TradePayoutVO;
 import infrastructure.sphere.db.entity.SandboxTradePaymentLinkOrder;
 import app.sphere.query.dto.SandboxTradePaymentLinkOrderPageDTO;
 import app.sphere.query.param.CashierParam;
-import app.sphere.query.param.SandboxTradeCashOrderPageParam;
-import app.sphere.query.param.SandboxTradePayOrderPageParam;
+import app.sphere.query.param.SandboxTradePayoutOrderPageParam;
+import app.sphere.query.param.SandboxTradePaymentOrderPageParam;
 import app.sphere.query.param.TradePaymentLinkPageParam;
 import org.mapstruct.Mapper;
 
@@ -32,9 +32,9 @@ import java.util.List;
 @Mapper(componentModel = "Spring")
 public interface SandboxTradeConverter {
 
-    SandboxTradePayOrderPageParam convertSandboxTradePayOrderPageParam(SandboxTradePayOrderPageReq req);
+    SandboxTradePaymentOrderPageParam convertSandboxTradePayOrderPageParam(SandboxTradePayOrderPageReq req);
 
-    SandboxTradeCashOrderPageParam convertSandboxTradeCashOrderPageParam(SandboxTradeCashOrderPageReq req);
+    SandboxTradePayoutOrderPageParam convertSandboxTradeCashOrderPageParam(SandboxTradeCashOrderPageReq req);
 
     TradePaymentCmd convertTradePayCommand(TradePaymentReq req);
 

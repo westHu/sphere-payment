@@ -72,8 +72,8 @@ public class TradeTransferOrderQueryServiceImpl extends AbstractTradeOrderQueryS
                 .eq(StringUtils.isNotBlank(param.getAccountNo()), TradeTransferOrder::getAccountNo, param.getAccountNo())
                 .eq(Objects.nonNull(param.getTradeStatus()), TradeTransferOrder::getTradeStatus, param.getTradeStatus())
                 .last("LIMIT " + limitSize);
-        List<TradeTransferOrder> cashOrderList = tradeTransferOrderRepository.list(queryWrapper);
-        List<TradeTransferOrderCsvDTO> csvDTOList = cashOrderList.stream().map(e -> {
+        List<TradeTransferOrder> transferOrderList = tradeTransferOrderRepository.list(queryWrapper);
+        List<TradeTransferOrderCsvDTO> csvDTOList = transferOrderList.stream().map(e -> {
             TradeTransferOrderCsvDTO csvDTO = new TradeTransferOrderCsvDTO();
             csvDTO.setTradeNo("'" + e.getTradeNo());
             csvDTO.setAccountNo("'" + e.getAccountNo());

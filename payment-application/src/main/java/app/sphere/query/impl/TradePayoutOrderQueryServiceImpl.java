@@ -9,12 +9,12 @@ import app.sphere.command.dto.trade.result.TradeResultDTO;
 import app.sphere.query.TradePayoutOrderQueryService;
 import app.sphere.query.dto.PageDTO;
 import app.sphere.query.dto.TradeCashOrderCsvDTO;
-import app.sphere.query.dto.TradeCashOrderDTO;
+import app.sphere.query.dto.TradePayoutOrderDTO;
 import app.sphere.query.dto.TradeCashOrderDetailDTO;
-import app.sphere.query.dto.TradeCashOrderPageDTO;
-import app.sphere.query.dto.TradeCashReceiptDTO;
+import app.sphere.query.dto.TradePayoutOrderPageDTO;
+import app.sphere.query.dto.TradePayoutReceiptDTO;
 import app.sphere.query.dto.TradeOrderTimeLineDTO;
-import app.sphere.query.param.TradeCashOrderPageParam;
+import app.sphere.query.param.TradePayoutOrderPageParam;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -59,7 +59,7 @@ public class TradePayoutOrderQueryServiceImpl extends AbstractTradeOrderQuerySer
 
 
     @Override
-    public PageDTO<TradeCashOrderPageDTO> pageCashOrderList(TradeCashOrderPageParam param) {
+    public PageDTO<TradePayoutOrderPageDTO> pagePayoutOrderList(TradePayoutOrderPageParam param) {
         if (Objects.isNull(param)) {
             return PageDTO.empty();
         }
@@ -103,7 +103,7 @@ public class TradePayoutOrderQueryServiceImpl extends AbstractTradeOrderQuerySer
             return PageDTO.empty();
         }
 
-        List<TradeCashOrderPageDTO> collect = page.getRecords().stream().map(this::getTradeCashOrderPageDTO).toList();
+        List<TradePayoutOrderPageDTO> collect = page.getRecords().stream().map(this::getTradeCashOrderPageDTO).toList();
         return PageDTO.of(page.getTotal(), page.getCurrent(), collect);
 
     }
@@ -111,7 +111,7 @@ public class TradePayoutOrderQueryServiceImpl extends AbstractTradeOrderQuerySer
 
     @Override
     @SneakyThrows
-    public String exportCashOrderList(TradeCashOrderPageParam param) {
+    public String exportPayoutOrderList(TradePayoutOrderPageParam param) {
         if (Objects.isNull(param)) {
             return null;
         }
@@ -147,7 +147,7 @@ public class TradePayoutOrderQueryServiceImpl extends AbstractTradeOrderQuerySer
                 .eq(Objects.nonNull(param.getPaymentStatus()), TradePayoutOrder::getPaymentStatus, param.getPaymentStatus())
                 .eq(Objects.nonNull(param.getCallBackStatus()), TradePayoutOrder::getCallBackStatus, param.getCallBackStatus());
         long count = tradePayoutOrderRepository.count(countWrapper);
-        log.info("exportCashOrderList count={}", count);
+        log.info("exportPayoutOrderList count={}", count);
         if (count == 0) {
             throw new PaymentException("There is no data to export, please confirm");
         }
@@ -208,13 +208,13 @@ public class TradePayoutOrderQueryServiceImpl extends AbstractTradeOrderQuerySer
         // 上传谷歌
         String fileName = StorageUtil.exportCsvFile("payout-");
         String uploadObject = null;//storageHandler.uploadObject(csvDTOList, param.getOperator(), fileName, "CashOrderList");
-        log.info("exportCashOrderList uploadObject={}", uploadObject);
+        log.info("exportPayoutOrderList uploadObject={}", uploadObject);
         return uploadObject;
     }
 
 
     @Override
-    public TradeCashOrderDTO getCashOrderByTradeNo(String tradeNo) {
+    public TradePayoutOrderDTO getPayoutOrderByTradeNo(String tradeNo) {
         QueryWrapper<TradePayoutOrder> cashOrderQuery = new QueryWrapper<>();
         cashOrderQuery.lambda().eq(TradePayoutOrder::getTradeNo, tradeNo).last(TradeConstant.LIMIT_1);
         TradePayoutOrder order = tradePayoutOrderRepository.getOne(cashOrderQuery);
@@ -224,7 +224,7 @@ public class TradePayoutOrderQueryServiceImpl extends AbstractTradeOrderQuerySer
         TradeCashOrderDetailDTO detailDTO = getTradeCashOrderDetailDTO(order);
         List<TradeOrderTimeLineDTO> sortLineDTOList = getTradeCashOrderTimeLineList(order);
 
-        TradeCashOrderDTO payOrderDTO = new TradeCashOrderDTO();
+        TradePayoutOrderDTO payOrderDTO = new TradePayoutOrderDTO();
         payOrderDTO.setCashOrderDetail(detailDTO);
         payOrderDTO.setTimeLine(sortLineDTOList);
         return payOrderDTO;
@@ -232,7 +232,7 @@ public class TradePayoutOrderQueryServiceImpl extends AbstractTradeOrderQuerySer
 
 
     @Override
-    public TradeCashReceiptDTO getCashReceipt(String tradeNo) {
+    public TradePayoutReceiptDTO getPayoutReceipt(String tradeNo) {
         QueryWrapper<TradePayoutOrder> cashOrderQuery = new QueryWrapper<>();
         cashOrderQuery.select("id, " +
                 "trade_no as tradeNo, " +
@@ -250,7 +250,7 @@ public class TradePayoutOrderQueryServiceImpl extends AbstractTradeOrderQuerySer
             return null;
         }
 
-        TradeCashReceiptDTO dto = new TradeCashReceiptDTO();
+        TradePayoutReceiptDTO dto = new TradePayoutReceiptDTO();
         dto.setTradeNo(order.getTradeNo());
 //        dto.setTradeTime(order.getTradeTime());
 //        dto.setPaymentFinishTime(order.getPaymentFinishTime());
@@ -269,10 +269,10 @@ public class TradePayoutOrderQueryServiceImpl extends AbstractTradeOrderQuerySer
     /**
      * 组装订单列表
      */
-    private TradeCashOrderPageDTO getTradeCashOrderPageDTO(TradePayoutOrder order) {
+    private TradePayoutOrderPageDTO getTradeCashOrderPageDTO(TradePayoutOrder order) {
         PaymentResultDTO paymentResultDTO = parsePaymentResult(order.getTradeResult());
 
-        TradeCashOrderPageDTO pageDTO = new TradeCashOrderPageDTO();
+        TradePayoutOrderPageDTO pageDTO = new TradePayoutOrderPageDTO();
         pageDTO.setPurpose(order.getPurpose());
         pageDTO.setTradeNo(order.getTradeNo());
         pageDTO.setOrderNo(order.getOrderNo());

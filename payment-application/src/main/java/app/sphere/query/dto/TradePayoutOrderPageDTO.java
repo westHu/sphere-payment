@@ -1,13 +1,11 @@
 package app.sphere.query.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
-public class TradePayOrderPageDTO {
+public class TradePayoutOrderPageDTO {
 
     /**
      * 目的
@@ -15,7 +13,7 @@ public class TradePayOrderPageDTO {
     private String purpose;
 
     /**
-     * 收款单号
+     * 代付单号
      */
     private String tradeNo;
 
@@ -50,7 +48,17 @@ public class TradePayOrderPageDTO {
     private String merchantName;
 
     /**
-     * 收款金额
+     * 商户账户号
+     */
+    private String accountNo;
+
+    /**
+     * 币种
+     */
+    private String currency;
+
+    /**
+     * 代付金额
      */
     private BigDecimal amount;
 
@@ -58,6 +66,16 @@ public class TradePayOrderPageDTO {
      * 手续费
      */
     private BigDecimal merchantFee;
+
+    /**
+     * 实扣金额
+     */
+    private BigDecimal actualAmount;
+
+    /**
+     * 到账金额
+     */
+    private BigDecimal accountAmount;
 
     /**
      * 交易状态
@@ -70,20 +88,14 @@ public class TradePayOrderPageDTO {
     private Integer paymentStatus;
 
     /**
-     * 结算状态
-     */
-    private Integer settleStatus;
-
-    /**
-     * 通知状态
+     * 回调状态
      */
     private Integer callBackStatus;
 
     /**
      * 交易时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime tradeTime;
+    private Integer tradeTime;
 
     /**
      * 支付完成时间
@@ -95,8 +107,5 @@ public class TradePayOrderPageDTO {
      */
     private Integer source;
 
-    /**
-     * 付款人信息
-     */
-    private PayerDTO payer;
+
 }

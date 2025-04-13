@@ -2,6 +2,7 @@ package api.sphere.convert;
 
 import api.sphere.controller.request.MerchantAddReq;
 import api.sphere.controller.request.MerchantDropListReq;
+import api.sphere.controller.request.MerchantIdReq;
 import api.sphere.controller.request.MerchantPageReq;
 import api.sphere.controller.request.MerchantUpdateReq;
 import api.sphere.controller.request.MerchantVerifyReq;
@@ -10,6 +11,7 @@ import app.sphere.command.cmd.MerchantAddCommand;
 import app.sphere.command.cmd.MerchantUpdateCommand;
 import app.sphere.command.cmd.MerchantVerifyCommand;
 import app.sphere.query.param.MerchantDropListParam;
+import app.sphere.query.param.MerchantIdParam;
 import infrastructure.sphere.db.entity.Merchant;
 import app.sphere.query.param.MerchantPageParam;
 import org.mapstruct.Mapper;
@@ -32,4 +34,6 @@ public interface MerchantConverter {
     MerchantUpdateCommand convertMerchantUpdateStatusCommand(MerchantUpdateReq req);
 
     MerchantVerifyCommand convertMerchantVerifyCommand(MerchantVerifyReq req);
+
+    MerchantIdParam convertMerchantIdParam(MerchantIdReq req);
 }

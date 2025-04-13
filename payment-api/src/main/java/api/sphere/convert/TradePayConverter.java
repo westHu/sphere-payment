@@ -16,7 +16,7 @@ import api.sphere.controller.response.TradePaymentLinkOrderVO;
 import infrastructure.sphere.db.entity.TradePaymentLinkOrder;
 import share.sphere.enums.TradePaymentSourceEnum;
 import app.sphere.query.param.CashierParam;
-import app.sphere.query.param.TradePayOrderPageParam;
+import app.sphere.query.param.TradePaymentOrderPageParam;
 import app.sphere.query.param.TradePaymentLinkPageParam;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -39,7 +39,7 @@ public interface TradePayConverter {
     @Mapping(source = "expiryPeriod", target = "expiryPeriod")
     TradePaymentCmd convertTradePayCmd(TradePaymentReq req);
 
-    TradePayOrderPageParam convertPageParam(TradePayOrderPageReq req);
+    TradePaymentOrderPageParam convertPageParam(TradePayOrderPageReq req);
 
     TradeCashierPaymentCmd convertTradeCashierPaymentCmd(TradeCashierPaymentReq req);
 

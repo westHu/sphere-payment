@@ -16,11 +16,11 @@ import app.sphere.query.dto.PageDTO;
 import app.sphere.query.dto.PayerDTO;
 import app.sphere.query.dto.TradeOrderTimeLineDTO;
 import app.sphere.query.dto.TradePayOrderCsvDTO;
-import app.sphere.query.dto.TradePayOrderDTO;
+import app.sphere.query.dto.TradePaymentOrderDTO;
 import app.sphere.query.dto.TradePayOrderDetailDTO;
-import app.sphere.query.dto.TradePayOrderPageDTO;
+import app.sphere.query.dto.TradePaymentOrderPageDTO;
 import app.sphere.query.param.CashierParam;
-import app.sphere.query.param.TradePayOrderPageParam;
+import app.sphere.query.param.TradePaymentOrderPageParam;
 import app.sphere.query.param.TradePaymentLinkPageParam;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.text.csv.CsvUtil;
@@ -78,7 +78,7 @@ public class TradePaymentOrderQueryServiceImpl implements TradePaymentOrderQuery
 
     @Override
     public Page<TradePaymentLinkOrder> pagePaymentLinkList(TradePaymentLinkPageParam param) {
-        log.info("getPayOrderByTradeNo param={}", JSONUtil.toJsonStr(param));
+        log.info("getPaymentOrderByTradeNo param={}", JSONUtil.toJsonStr(param));
 
         if (Objects.isNull(param)) {
             return new Page<>();
@@ -95,8 +95,8 @@ public class TradePaymentOrderQueryServiceImpl implements TradePaymentOrderQuery
 
 
     @Override
-    public PageDTO<TradePayOrderPageDTO> pagePayOrderList(TradePayOrderPageParam param) {
-        log.info("pagePayOrderList param={}", JSONUtil.toJsonStr(param));
+    public PageDTO<TradePaymentOrderPageDTO> pagePaymentOrderList(TradePaymentOrderPageParam param) {
+        log.info("pagePaymentOrderList param={}", JSONUtil.toJsonStr(param));
 
         if (Objects.isNull(param)) {
             return PageDTO.empty();
@@ -141,7 +141,7 @@ public class TradePaymentOrderQueryServiceImpl implements TradePaymentOrderQuery
             return PageDTO.empty();
         }
 
-        List<TradePayOrderPageDTO> collect = page.getRecords().stream()
+        List<TradePaymentOrderPageDTO> collect = page.getRecords().stream()
                 .map(this::getTradePayOrderPageDTO)
                 .toList();
         return PageDTO.of(page.getTotal(), page.getCurrent(), collect);
@@ -150,8 +150,8 @@ public class TradePaymentOrderQueryServiceImpl implements TradePaymentOrderQuery
 
     @Override
     @SneakyThrows
-    public String exportPayOrderList(TradePayOrderPageParam param) {
-        log.info("exportPayOrderList param={}", JSONUtil.toJsonStr(param));
+    public String exportPaymentOrderList(TradePaymentOrderPageParam param) {
+        log.info("exportPaymentOrderList param={}", JSONUtil.toJsonStr(param));
         if (Objects.isNull(param)) {
             return null;
         }
@@ -186,7 +186,7 @@ public class TradePaymentOrderQueryServiceImpl implements TradePaymentOrderQuery
                 .le(Objects.nonNull(param.getAmountMax()), TradePaymentOrder::getAmount, param.getAmountMax())
                 .eq(Objects.nonNull(param.getTradeStatus()), TradePaymentOrder::getTradeStatus, param.getTradeStatus());
         long count = tradePaymentOrderRepository.count(countWrapper);
-        log.info("exportPayOrderList count={}", count);
+        log.info("exportPaymentOrderList count={}", count);
         if (count == 0) {
             throw new PaymentException("There is no data to export, please confirm");
         }
@@ -250,7 +250,7 @@ public class TradePaymentOrderQueryServiceImpl implements TradePaymentOrderQuery
         // 上传谷歌
         String fileName = StorageUtil.exportCsvFile("payin-");
         String uploadObject = null; //storageHandler.uploadObject(csvDTOList, param.getOperator(), fileName, "PayOrderList");
-        log.info("exportPayOrderList uploadObject={}", uploadObject);
+        log.info("exportPaymentOrderList uploadObject={}", uploadObject);
         return uploadObject;
     }
 
@@ -306,8 +306,8 @@ public class TradePaymentOrderQueryServiceImpl implements TradePaymentOrderQuery
      */
 
     @Override
-    public TradePayOrderDTO getPayOrderByTradeNo(String tradeNo) {
-        log.info("getPayOrderByTradeNo param={}", tradeNo);
+    public TradePaymentOrderDTO getPaymentOrderByTradeNo(String tradeNo) {
+        log.info("getPaymentOrderByTradeNo param={}", tradeNo);
 
         QueryWrapper<TradePaymentOrder> payOrderQuery = new QueryWrapper<>();
         payOrderQuery.lambda().eq(TradePaymentOrder::getTradeNo, tradeNo).last(TradeConstant.LIMIT_1);
@@ -317,7 +317,7 @@ public class TradePaymentOrderQueryServiceImpl implements TradePaymentOrderQuery
         TradePayOrderDetailDTO detailDTO = getTradePayOrderDetailDTO(order);
         List<TradeOrderTimeLineDTO> sortLineDTOList = getTradePayOrderTimeLineList(order);
 
-        TradePayOrderDTO payOrderDTO = new TradePayOrderDTO();
+        TradePaymentOrderDTO payOrderDTO = new TradePaymentOrderDTO();
         payOrderDTO.setPayOrderDetail(detailDTO);
         payOrderDTO.setTimeLine(sortLineDTOList);
         return payOrderDTO;
@@ -326,12 +326,12 @@ public class TradePaymentOrderQueryServiceImpl implements TradePaymentOrderQuery
     /**
      * 组装订单列表
      */
-    private TradePayOrderPageDTO getTradePayOrderPageDTO(TradePaymentOrder order) {
+    private TradePaymentOrderPageDTO getTradePayOrderPageDTO(TradePaymentOrder order) {
         PayerDTO payerDTO = Optional.of(order).map(TradePaymentOrder::getPayerInfo)
                 .map(e -> JSONUtil.toBean(e, PayerDTO.class))
                 .orElse(null);
 
-        TradePayOrderPageDTO pageDTO = new TradePayOrderPageDTO();
+        TradePaymentOrderPageDTO pageDTO = new TradePaymentOrderPageDTO();
         pageDTO.setPurpose(order.getPurpose());
         pageDTO.setTradeNo(order.getTradeNo());
         pageDTO.setOrderNo(order.getOrderNo());

@@ -1,11 +1,18 @@
 package app.sphere.query.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
-public class SandboxTradePayOrderPageDTO {
+public class TradePaymentOrderPageDTO {
+
+    /**
+     * 目的
+     */
+    private String purpose;
 
     /**
      * 收款单号
@@ -18,9 +25,19 @@ public class SandboxTradePayOrderPageDTO {
     private String orderNo;
 
     /**
+     * 渠道订单号
+     */
+    private String channelOrderNo;
+
+    /**
      * 支付方式
      */
     private String paymentMethod;
+
+    /**
+     * 渠道名称
+     */
+    private String channelName;
 
     /**
      * 商户ID
@@ -38,19 +55,24 @@ public class SandboxTradePayOrderPageDTO {
     private BigDecimal amount;
 
     /**
-     * 商户手续费
+     * 手续费
      */
     private BigDecimal merchantFee;
 
     /**
-     * 到账金额
+     * 交易状态
      */
-    private BigDecimal accountAmount;
+    private Integer tradeStatus;
 
     /**
      * 支付状态
      */
     private Integer paymentStatus;
+
+    /**
+     * 结算状态
+     */
+    private Integer settleStatus;
 
     /**
      * 通知状态
@@ -60,12 +82,21 @@ public class SandboxTradePayOrderPageDTO {
     /**
      * 交易时间
      */
-    private Long tradeTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime tradeTime;
 
     /**
      * 支付完成时间
      */
-    private Long paymentFinishTime;
+    private Integer paymentFinishTime;
 
+    /**
+     * 来源
+     */
+    private Integer source;
 
+    /**
+     * 付款人信息
+     */
+    private PayerDTO payer;
 }

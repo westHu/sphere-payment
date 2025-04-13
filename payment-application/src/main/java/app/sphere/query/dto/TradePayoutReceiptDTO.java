@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-public class TradeCashReceiptDTO {
+public class TradePayoutReceiptDTO {
 
     /**
      * 代付单号

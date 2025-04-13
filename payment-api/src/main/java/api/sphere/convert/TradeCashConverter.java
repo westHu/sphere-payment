@@ -11,8 +11,8 @@ import api.sphere.controller.request.TradeCashSupplementReq;
 import api.sphere.controller.request.TradePayoutReq;
 import api.sphere.controller.response.TradeCashOrderPageVO;
 import api.sphere.controller.response.TradePayoutVO;
-import app.sphere.query.dto.TradeCashOrderPageDTO;
-import app.sphere.query.param.TradeCashOrderPageParam;
+import app.sphere.query.dto.TradePayoutOrderPageDTO;
+import app.sphere.query.param.TradePayoutOrderPageParam;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -24,15 +24,15 @@ public interface TradeCashConverter {
 
     TradePayoutVO convertTradePayoutVO(TradePayoutDTO dto);
 
-    TradeCashOrderPageParam convertPageParam(TradeCashOrderPageReq req);
+    TradePayoutOrderPageParam convertPageParam(TradeCashOrderPageReq req);
 
-    List<TradeCashOrderPageVO> convertPageVOList(List<TradeCashOrderPageDTO> orderList);
+    List<TradeCashOrderPageVO> convertPageVOList(List<TradePayoutOrderPageDTO> orderList);
 
     TradeCashSupplementCommand convertTradeCashSupplementCommand(TradeCashSupplementReq req);
 
     TradeCashRefundCommand convertTradeCashRefundCommand(TradeCashRefundReq req);
 
-    TradeCashOrderPageParam convertTradeCashOrderPageParam(TradeCashOrderPageReq req);
+    TradePayoutOrderPageParam convertTradeCashOrderPageParam(TradeCashOrderPageReq req);
 
-    List<TradeCashOrderPageVO> convertTradeCashOrderPageVOList(List<TradeCashOrderPageDTO> data);
+    List<TradeCashOrderPageVO> convertTradeCashOrderPageVOList(List<TradePayoutOrderPageDTO> data);
 }

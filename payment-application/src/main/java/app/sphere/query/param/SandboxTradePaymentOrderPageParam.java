@@ -1,9 +1,11 @@
 package app.sphere.query.param;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class SandboxTradeCashOrderPageParam extends PageParam {
+public class SandboxTradePaymentOrderPageParam extends PageParam {
 
     /**
      * 商户ID

@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 import share.sphere.enums.QuerySourceEnum;
 import share.sphere.enums.TradePaymentSourceEnum;
-import share.sphere.enums.TradeStatusEnum;
 import share.sphere.result.PageResult;
 import share.sphere.result.Result;
 
@@ -127,9 +126,7 @@ public class MerchantAdminController {
     public Mono<Result<MerchantBaseVO>> getBaseMerchant(@RequestBody @Validated MerchantIdReq req) {
         log.info("获取商户基本信息, merchantId={}", req.getMerchantId());
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
-        MerchantIdParam param = new MerchantIdParam();
-        param.setMerchantId(req.getMerchantId());
-
+        MerchantIdParam param = merchantConverter.convertMerchantIdParam(req);
         Merchant merchant = merchantQueryService.getMerchant(param);
         MerchantBaseVO vo = merchantConverter.convertMerchantBaseVO(merchant);
         return Mono.just(Result.ok(vo));
@@ -145,8 +142,7 @@ public class MerchantAdminController {
     public Mono<Result<MerchantConfigDTO>> getMerchantConfig(@RequestBody @Validated MerchantIdReq req) {
         log.info("获取商户配置信息, merchantId={}", req.getMerchantId());
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
-        MerchantIdParam param = merchantConfigConverter.convertMerchantIdParam(req);
-
+        MerchantIdParam param = merchantConverter.convertMerchantIdParam(req);
         MerchantConfigDTO merchantConfigDTO = merchantConfigQueryService.getMerchantConfig(param);
         return Mono.just(Result.ok(merchantConfigDTO));
     }
@@ -162,7 +158,6 @@ public class MerchantAdminController {
         log.info("更新商户配置信息, req={}", JSONUtil.toJsonStr(req));
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
         MerchantConfigUpdateCmd cmd = merchantConfigConverter.convertMerchantConfigUpdateCmd(req);
-
         boolean updated = merchantConfigCmdService.updateMerchantConfig(cmd);
         return Mono.just(Result.ok(updated));
     }
@@ -179,7 +174,6 @@ public class MerchantAdminController {
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
         MerchantChannelConfigListParam param =
                 merchantChannelConfigConverter.convertMerchantChannelConfigListParam(req);
-
         MerchantChannelConfigListDTO configList = merchantChannelConfigQueryService.getMerchantChannelConfigList(param);
         return Mono.just(Result.ok(configList));
     }
@@ -197,7 +191,6 @@ public class MerchantAdminController {
         log.info("商户登录, username={}", req.getUsername());
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
         MerchantLoginCmd cmd = merchantLoginConverter.convertMerchantLoginCmd(req);
-
         MerchantLoginDTO dto = merchantLoginCmdService.merchantLogin(cmd);
         return Mono.just(Result.ok(dto));
     }
@@ -213,7 +206,6 @@ public class MerchantAdminController {
         log.info("验证谷歌验证码, username={}", req.getUsername());
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
         MerchantVerifyGoogleCodeCmd cmd = merchantLoginConverter.convertMerchantVerifyGoogleCodeCommand(req);
-
         boolean verified = merchantLoginCmdService.verifyGoogleCode(cmd);
         return Mono.just(Result.ok(verified));
     }
@@ -229,7 +221,6 @@ public class MerchantAdminController {
         log.info("商户忘记密码, username={}", req.getUsername());
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
         MerchantPasswordForgetCmd cmd = merchantLoginConverter.convertMerchantPasswordForgetCmd(req);
-
         boolean forgotten = merchantLoginCmdService.forgetPassword(cmd);
         return Mono.just(Result.ok(forgotten));
     }
@@ -245,7 +236,6 @@ public class MerchantAdminController {
         log.info("商户修改密码, username={}", req.getUsername());
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
         MerchantPasswordChannelCmd cmd = merchantLoginConverter.convertMerchantPasswordChannelCmd(req);
-
         boolean changed = merchantLoginCmdService.changePassword(cmd);
         return Mono.just(Result.ok(changed));
     }
@@ -261,7 +251,6 @@ public class MerchantAdminController {
         log.info("展示谷歌验证器二维码, merchantId={}", req.getMerchantId());
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
         MerchantShowGoogleCodeCmd cmd = merchantLoginConverter.convertMerchantShowGoogleCodeCmd(req);
-
         String shown = merchantLoginCmdService.showGoogleAuth(cmd);
         return Mono.just(Result.ok(shown));
     }
@@ -277,7 +266,6 @@ public class MerchantAdminController {
         log.info("绑定谷歌验证器, merchantId={}", req.getMerchantId());
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
         MerchantSetGoogleCodeCmd cmd = merchantLoginConverter.convertMerchantSetGoogleCodeCmd(req);
-
         boolean set = merchantLoginCmdService.setGoogleCode(cmd);
         return Mono.just(Result.ok(set));
     }
@@ -293,7 +281,6 @@ public class MerchantAdminController {
         log.info("解绑谷歌验证器, merchantId={}", req.getMerchantId());
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
         MerchantUnsetGoogleCodeCmd cmd = merchantLoginConverter.convertMerchantUnsetGoogleCodeCmd(req);
-
         boolean unset = merchantLoginCmdService.unsetGoogleAuth(cmd);
         return Mono.just(Result.ok(unset));
     }
@@ -313,7 +300,6 @@ public class MerchantAdminController {
         log.info("获取支付链接配置, merchantId={}", req.getMerchantId());
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
         MerchantIdParam param = merchantConfigConverter.convertMerchantIdParam(req);
-
         app.sphere.query.dto.MerchantPaymentLinkSettingDTO paymentLinkSetting =
                 merchantConfigQueryService.getPaymentLinkSetting(param);
         return Mono.just(Result.ok(paymentLinkSetting));
@@ -330,7 +316,6 @@ public class MerchantAdminController {
         log.info("更新支付链接配置, req={}", JSONUtil.toJsonStr(req));
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
         PaymentLinkSettingCmd cmd = merchantConfigConverter.convertPaymentLinkSettingCmd(req);
-
         boolean updated = merchantConfigCmdService.updatePaymentLinkSetting(cmd);
         return Mono.just(Result.ok(updated));
     }
@@ -462,7 +447,7 @@ public class MerchantAdminController {
     public Mono<PageResult<TradePaymentLinkOrderVO>> pagePaymentLinkList(@RequestBody @Validated TradePaymentLinkPageReq req) {
         log.info("分页查询支付链接, req={}", JSONUtil.toJsonStr(req));
         TradePaymentLinkPageParam param = tradePayConverter.convertTradePaymentLinkPageParam(req);
-        Page<TradePaymentLinkOrder> page = null;//tradePayOrderQueryService.pagePaymentLinkList(param);
+        Page<TradePaymentLinkOrder> page = tradePaymentOrderQueryService.pagePaymentLinkList(param);
         List<TradePaymentLinkOrderVO> voList = tradePayConverter.convertTradePaymentLinkOrderVOList(page.getRecords());
         return Mono.just(PageResult.ok(page.getTotal(), page.getCurrent(), voList));
     }
@@ -473,12 +458,11 @@ public class MerchantAdminController {
      * @param req 收款订单分页查询请求
      * @return 收款订单分页结果
      */
-    @PostMapping("/v1/pagePayOrderList")
-    public Mono<PageResult<TradePayOrderPageDTO>> pagePayOrderList(@RequestBody @Validated TradePayOrderPageReq req) {
+    @PostMapping("/v1/pagePaymentOrderList")
+    public Mono<PageResult<TradePaymentOrderPageDTO>> pagePayOrderList(@RequestBody @Validated TradePayOrderPageReq req) {
         log.info("分页查询收款订单列表, req={}", JSONUtil.toJsonStr(req));
-        TradePayOrderPageParam param = tradePayConverter.convertPageParam(req);
-
-        PageDTO<TradePayOrderPageDTO> pageDTO = null;//tradePayOrderQueryService.pagePayOrderList(param);
+        TradePaymentOrderPageParam param = tradePayConverter.convertPageParam(req);
+        PageDTO<TradePaymentOrderPageDTO> pageDTO = tradePaymentOrderQueryService.pagePaymentOrderList(param);
         return Mono.just(PageResult.ok(pageDTO.getTotal(), pageDTO.getCurrent(), pageDTO.getData()));
     }
 
@@ -488,12 +472,11 @@ public class MerchantAdminController {
      * @param req 收款订单导出请求
      * @return 导出文件路径
      */
-    @PostMapping("/v1/exportPayOrderList")
+    @PostMapping("/v1/exportPaymentOrderList")
     public Mono<Result<String>> exportPayOrderList(@RequestBody @Validated TradePayOrderPageReq req) {
         log.info("导出收款订单列表, req={}", JSONUtil.toJsonStr(req));
-        TradePayOrderPageParam param = tradePayConverter.convertPageParam(req);
-
-        String exportPayOrder = null;//tradePayOrderQueryService.exportPayOrderList(param);
+        TradePaymentOrderPageParam param = tradePayConverter.convertPageParam(req);
+        String exportPayOrder = tradePaymentOrderQueryService.exportPaymentOrderList(param);
         return Mono.just(Result.ok(exportPayOrder));
     }
 
@@ -504,9 +487,9 @@ public class MerchantAdminController {
      * @return 收款订单详情
      */
     @PostMapping("/v1/getPayOrder")
-    public Mono<Result<TradePayOrderDTO>> getPayOrder(@RequestBody @Validated TradeNoReq req) {
+    public Mono<Result<TradePaymentOrderDTO>> getPayOrder(@RequestBody @Validated TradeNoReq req) {
         log.info("查询收款订单详情, req={}", JSONUtil.toJsonStr(req));
-        TradePayOrderDTO dto = null;//tradePayOrderQueryService.getPayOrderByTradeNo(req.getTradeNo());
+        TradePaymentOrderDTO dto = tradePaymentOrderQueryService.getPaymentOrderByTradeNo(req.getTradeNo());
         return Mono.just(Result.ok(dto));
     }
 
@@ -518,12 +501,12 @@ public class MerchantAdminController {
      * @param req 代付订单分页查询请求
      * @return 代付订单分页结果
      */
-    @PostMapping("/v1/pageCashOrderList")
+    @PostMapping("/v1/pagePayoutOrderList")
     public Mono<PageResult<TradeCashOrderPageVO>> pageCashOrderList(@RequestBody @Validated TradeCashOrderPageReq req) {
         log.info("分页查询代付订单列表, req={}", JSONUtil.toJsonStr(req));
-        TradeCashOrderPageParam param = tradePayoutConverter.convertPageParam(req);
+        TradePayoutOrderPageParam param = tradePayoutConverter.convertPageParam(req);
 
-        PageDTO<TradeCashOrderPageDTO> pageDTO = tradePayoutOrderQueryService.pageCashOrderList(param);
+        PageDTO<TradePayoutOrderPageDTO> pageDTO = tradePayoutOrderQueryService.pagePayoutOrderList(param);
         List<TradeCashOrderPageVO> voList = tradePayoutConverter.convertPageVOList(pageDTO.getData());
         return Mono.just(PageResult.ok(pageDTO.getTotal(), pageDTO.getCurrent(), voList));
     }
@@ -534,12 +517,12 @@ public class MerchantAdminController {
      * @param req 代付订单导出请求
      * @return 导出文件路径
      */
-    @PostMapping("/v1/exportCashOrderList")
+    @PostMapping("/v1/exportPayoutOrderList")
     public Mono<Result<String>> exportCashOrderList(@RequestBody @Validated TradeCashOrderPageReq req) {
         log.info("导出代付订单列表, req={}", JSONUtil.toJsonStr(req));
-        TradeCashOrderPageParam param = tradePayoutConverter.convertPageParam(req);
+        TradePayoutOrderPageParam param = tradePayoutConverter.convertPageParam(req);
 
-        String exportCashOrder = tradePayoutOrderQueryService.exportCashOrderList(param);
+        String exportCashOrder = tradePayoutOrderQueryService.exportPayoutOrderList(param);
         return Mono.just(Result.ok(exportCashOrder));
     }
 
@@ -550,10 +533,10 @@ public class MerchantAdminController {
      * @return 代付订单详情
      */
     @PostMapping("/v1/getCashOrder")
-    public Mono<Result<TradeCashOrderDTO>> getCashOrder(@RequestBody @Validated TradeNoReq req) {
+    public Mono<Result<TradePayoutOrderDTO>> getCashOrder(@RequestBody @Validated TradeNoReq req) {
         log.info("查询代付订单详情, req={}", JSONUtil.toJsonStr(req));
 
-        TradeCashOrderDTO cashOrderDTO = tradePayoutOrderQueryService.getCashOrderByTradeNo(req.getTradeNo());
+        TradePayoutOrderDTO cashOrderDTO = tradePayoutOrderQueryService.getPayoutOrderByTradeNo(req.getTradeNo());
         return Mono.just(Result.ok(cashOrderDTO));
     }
 
@@ -563,11 +546,11 @@ public class MerchantAdminController {
      * @param req 交易单号请求
      * @return 代付交易凭证
      */
-    @PostMapping("/v1/getCashReceipt")
-    public Mono<Result<TradeCashReceiptDTO>> getCashReceipt(@RequestBody @Validated TradeNoReq req) {
+    @PostMapping("/v1/getPayoutReceipt")
+    public Mono<Result<TradePayoutReceiptDTO>> getCashReceipt(@RequestBody @Validated TradeNoReq req) {
         log.info("查询代付交易凭证, req={}", JSONUtil.toJsonStr(req));
 
-        TradeCashReceiptDTO cashReceipt = tradePayoutOrderQueryService.getCashReceipt(req.getTradeNo());
+        TradePayoutReceiptDTO cashReceipt = tradePayoutOrderQueryService.getPayoutReceipt(req.getTradeNo());
         return Mono.just(Result.ok(cashReceipt));
     }
 
@@ -614,7 +597,7 @@ public class MerchantAdminController {
         log.info("分页查询充值订单, req={}", JSONUtil.toJsonStr(req));
         TradeRechargeOrderPageParam param = tradeRechargeConverter.convertTradeRechargeOrderPageParam(req);
 
-        Page<TradeRechargeOrder> page = null;//tradeRechargeOrderQueryService.pageRechargeOrderList(param);
+        Page<TradeRechargeOrder> page = tradeRechargeOrderQueryService.pageRechargeOrderList(param);
         List<TradeRechargeOrderPageVO> voList =
                 tradeRechargeConverter.convertTradeRechargeOrderPageVOList(page.getRecords());
         return Mono.just(PageResult.ok(page.getTotal(), page.getCurrent(), voList));
@@ -631,7 +614,7 @@ public class MerchantAdminController {
         log.info("导出充值订单, req={}", JSONUtil.toJsonStr(req));
         TradeRechargeOrderPageParam param = tradeRechargeConverter.convertTradeRechargeOrderPageParam(req);
 
-        String exportRechargeOrder = null;//tradeRechargeOrderQueryService.exportRechargeOrderList(param);
+        String exportRechargeOrder = tradeRechargeOrderQueryService.exportRechargeOrderList(param);
         return Mono.just(Result.ok(exportRechargeOrder));
     }
 
@@ -679,15 +662,7 @@ public class MerchantAdminController {
         TradeTransferOrderPageParam param = tradeTransferConverter.convertTradeTransferOrderPageParam(req);
 
         Page<TradeTransferOrder> page = tradeTransferOrderQueryService.pageTransferOrderList(param);
-
-        // 处理失败的结束时间
-        page.getRecords().forEach(e -> {
-            if (e.getTradeStatus().equals(TradeStatusEnum.TRADE_FAILED.getCode())) {
-//                e.setSettleFinishTime(e.getUpdateTime());
-            }
-        });
-        List<TradeTransferOrderPageVO> voList =
-                tradeTransferConverter.convertTradeTransferOrderPageVOList(page.getRecords());
+        List<TradeTransferOrderPageVO> voList = tradeTransferConverter.convertTradeTransferOrderPageVOList(page.getRecords());
         return Mono.just(PageResult.ok(page.getTotal(), page.getCurrent(), voList));
     }
 

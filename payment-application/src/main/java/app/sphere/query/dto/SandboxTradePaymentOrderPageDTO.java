@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class SandboxTradeCashOrderPageDTO {
+public class SandboxTradePaymentOrderPageDTO {
 
     /**
      * 收款单号
@@ -60,12 +60,12 @@ public class SandboxTradeCashOrderPageDTO {
     /**
      * 交易时间
      */
-    private Integer tradeTime;
+    private Long tradeTime;
 
     /**
      * 支付完成时间
      */
-    private Integer paymentFinishTime;
+    private Long paymentFinishTime;
 
 
 }

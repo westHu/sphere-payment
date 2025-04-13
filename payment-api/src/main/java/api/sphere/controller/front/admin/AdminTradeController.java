@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 import share.sphere.enums.TradePaymentSourceEnum;
-import share.sphere.enums.TradeStatusEnum;
 import share.sphere.result.PageResult;
 import share.sphere.result.Result;
 
@@ -203,11 +202,11 @@ public class AdminTradeController {
      * @param req 分页查询请求
      * @return 订单分页列表
      */
-    @PostMapping("/v1/pagePayOrderList")
-    public Mono<PageResult<TradePayOrderPageDTO>> pagePayOrderList(@RequestBody @Validated TradePayOrderPageReq req) {
+    @PostMapping("/v1/pagePaymentOrderList")
+    public Mono<PageResult<TradePaymentOrderPageDTO>> pagePayOrderList(@RequestBody @Validated TradePayOrderPageReq req) {
         log.info("分页查询收款订单列表, req={}", JSONUtil.toJsonStr(req));
-        TradePayOrderPageParam param = tradePayConverter.convertPageParam(req);
-        PageDTO<TradePayOrderPageDTO> pageDTO = null;//tradePayOrderQueryService.pagePayOrderList(param);
+        TradePaymentOrderPageParam param = tradePayConverter.convertPageParam(req);
+        PageDTO<TradePaymentOrderPageDTO> pageDTO = null;//tradePayOrderQueryService.pagePaymentOrderList(param);
         return Mono.just(PageResult.ok(pageDTO.getTotal(), pageDTO.getCurrent(), pageDTO.getData()));
     }
 
@@ -217,11 +216,11 @@ public class AdminTradeController {
      * @param req 导出请求
      * @return 导出结果
      */
-    @PostMapping("/v1/exportPayOrderList")
+    @PostMapping("/v1/exportPaymentOrderList")
     public Mono<Result<String>> exportPayOrderList(@RequestBody @Validated TradePayOrderPageReq req) {
         log.info("导出收款订单列表, req={}", JSONUtil.toJsonStr(req));
-        TradePayOrderPageParam param = tradePayConverter.convertPageParam(req);
-        String exportPayOrder = null;//tradePayOrderQueryService.exportPayOrderList(param);
+        TradePaymentOrderPageParam param = tradePayConverter.convertPageParam(req);
+        String exportPayOrder = null;//tradePayOrderQueryService.exportPaymentOrderList(param);
         return Mono.just(Result.ok(exportPayOrder));
     }
 
@@ -232,9 +231,9 @@ public class AdminTradeController {
      * @return 订单详情
      */
     @PostMapping("/v1/getPayOrder")
-    public Mono<Result<TradePayOrderDTO>> getPayOrder(@RequestBody @Validated TradeNoReq req) {
+    public Mono<Result<TradePaymentOrderDTO>> getPayOrder(@RequestBody @Validated TradeNoReq req) {
         log.info("获取收款订单详情, req={}", JSONUtil.toJsonStr(req));
-        TradePayOrderDTO dto = null;//tradePayOrderQueryService.getPayOrderByTradeNo(req.getTradeNo());
+        TradePaymentOrderDTO dto = null;//tradePayOrderQueryService.getPaymentOrderByTradeNo(req.getTradeNo());
         return Mono.just(Result.ok(dto));
     }
 
@@ -272,11 +271,11 @@ public class AdminTradeController {
      * @param req 分页查询请求
      * @return 订单分页列表
      */
-    @PostMapping("/v1/pageCashOrderList")
+    @PostMapping("/v1/pagePayoutOrderList")
     public Mono<PageResult<TradeCashOrderPageVO>> pageCashOrderList(@RequestBody @Validated TradeCashOrderPageReq req) {
         log.info("分页查询代付订单列表, req={}", JSONUtil.toJsonStr(req));
-        TradeCashOrderPageParam param = tradePayoutConverter.convertTradeCashOrderPageParam(req);
-        PageDTO<TradeCashOrderPageDTO> pageDTO = tradePayoutOrderQueryService.pageCashOrderList(param);
+        TradePayoutOrderPageParam param = tradePayoutConverter.convertTradeCashOrderPageParam(req);
+        PageDTO<TradePayoutOrderPageDTO> pageDTO = tradePayoutOrderQueryService.pagePayoutOrderList(param);
         List<TradeCashOrderPageVO> voList = tradePayoutConverter.convertTradeCashOrderPageVOList(pageDTO.getData());
         return Mono.just(PageResult.ok(pageDTO.getTotal(), pageDTO.getCurrent(), voList));
     }
@@ -287,11 +286,11 @@ public class AdminTradeController {
      * @param req 导出请求
      * @return 导出结果
      */
-    @PostMapping("/v1/exportCashOrderList")
+    @PostMapping("/v1/exportPayoutOrderList")
     public Mono<Result<String>> exportCashOrderList(@RequestBody @Validated TradeCashOrderPageReq req) {
         log.info("导出代付订单列表, req={}", JSONUtil.toJsonStr(req));
-        TradeCashOrderPageParam param = tradePayoutConverter.convertTradeCashOrderPageParam(req);
-        return Mono.just(Result.ok(tradePayoutOrderQueryService.exportCashOrderList(param)));
+        TradePayoutOrderPageParam param = tradePayoutConverter.convertTradeCashOrderPageParam(req);
+        return Mono.just(Result.ok(tradePayoutOrderQueryService.exportPayoutOrderList(param)));
     }
 
     /**
@@ -301,9 +300,9 @@ public class AdminTradeController {
      * @return 订单详情
      */
     @PostMapping("/v1/getCashOrder")
-    public Mono<Result<TradeCashOrderDTO>> getCashOrder(@RequestBody @Validated TradeNoReq req) {
+    public Mono<Result<TradePayoutOrderDTO>> getCashOrder(@RequestBody @Validated TradeNoReq req) {
         log.info("获取代付订单详情, req={}", JSONUtil.toJsonStr(req));
-        return Mono.just(Result.ok(tradePayoutOrderQueryService.getCashOrderByTradeNo(req.getTradeNo())));
+        return Mono.just(Result.ok(tradePayoutOrderQueryService.getPayoutOrderByTradeNo(req.getTradeNo())));
     }
 
     /**
@@ -312,10 +311,10 @@ public class AdminTradeController {
      * @param req 查询请求
      * @return 回单信息
      */
-    @PostMapping("/v1/getCashReceipt")
-    public Mono<Result<TradeCashReceiptDTO>> getCashReceipt(@RequestBody @Validated TradeNoReq req) {
+    @PostMapping("/v1/getPayoutReceipt")
+    public Mono<Result<TradePayoutReceiptDTO>> getCashReceipt(@RequestBody @Validated TradeNoReq req) {
         log.info("获取代付回单, req={}", JSONUtil.toJsonStr(req));
-        return Mono.just(Result.ok(tradePayoutOrderQueryService.getCashReceipt(req.getTradeNo())));
+        return Mono.just(Result.ok(tradePayoutOrderQueryService.getPayoutReceipt(req.getTradeNo())));
     }
 
     // ===================== 充值管理接口 =====================

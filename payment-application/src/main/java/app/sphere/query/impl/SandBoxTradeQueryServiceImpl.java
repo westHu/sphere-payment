@@ -1,8 +1,8 @@
 package app.sphere.query.impl;
 
 import app.sphere.query.param.CashierParam;
-import app.sphere.query.param.SandboxTradeCashOrderPageParam;
-import app.sphere.query.param.SandboxTradePayOrderPageParam;
+import app.sphere.query.param.SandboxTradePayoutOrderPageParam;
+import app.sphere.query.param.SandboxTradePaymentOrderPageParam;
 import app.sphere.query.param.TradePaymentLinkPageParam;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.json.JSONUtil;
@@ -21,8 +21,8 @@ import app.sphere.query.dto.CashierDTO;
 import app.sphere.query.dto.CashierPaymentMethodDTO;
 import app.sphere.query.dto.CashierPaymentTypeDTO;
 import app.sphere.query.dto.PageDTO;
-import app.sphere.query.dto.SandboxTradeCashOrderPageDTO;
-import app.sphere.query.dto.SandboxTradePayOrderPageDTO;
+import app.sphere.query.dto.SandboxTradePayoutOrderPageDTO;
+import app.sphere.query.dto.SandboxTradePaymentOrderPageDTO;
 import domain.sphere.repository.SandboxTradePaymentLinkOrderRepository;
 import domain.sphere.repository.SandboxTradePaymentOrderRepository;
 import domain.sphere.repository.SandboxTradePayoutOrderRepository;
@@ -57,7 +57,7 @@ public class SandBoxTradeQueryServiceImpl implements SandBoxTradeQueryService {
 
 
     @Override
-    public PageDTO<SandboxTradePayOrderPageDTO> pageSandBoxPayOrderList(SandboxTradePayOrderPageParam param) {
+    public PageDTO<SandboxTradePaymentOrderPageDTO> pageSandBoxPayOrderList(SandboxTradePaymentOrderPageParam param) {
         log.info("pageSandBoxPayOrderList param={}", JSONUtil.toJsonStr(param));
 
         QueryWrapper<SandboxTradePaymentOrder> payQuery = new QueryWrapper<>();
@@ -72,8 +72,8 @@ public class SandBoxTradeQueryServiceImpl implements SandBoxTradeQueryService {
             return PageDTO.empty();
         }
 
-        List<SandboxTradePayOrderPageDTO> collect = page.getRecords().stream().map(e -> {
-            SandboxTradePayOrderPageDTO dto = new SandboxTradePayOrderPageDTO();
+        List<SandboxTradePaymentOrderPageDTO> collect = page.getRecords().stream().map(e -> {
+            SandboxTradePaymentOrderPageDTO dto = new SandboxTradePaymentOrderPageDTO();
             dto.setTradeNo(e.getTradeNo());
             dto.setOrderNo(e.getOrderNo());
             dto.setPaymentMethod(e.getPaymentMethod());
@@ -95,7 +95,7 @@ public class SandBoxTradeQueryServiceImpl implements SandBoxTradeQueryService {
 
 
     @Override
-    public PageDTO<SandboxTradeCashOrderPageDTO> pageSandboxCashOrderList(SandboxTradeCashOrderPageParam param) {
+    public PageDTO<SandboxTradePayoutOrderPageDTO> pageSandboxCashOrderList(SandboxTradePayoutOrderPageParam param) {
         log.info("pageSandboxCashOrderList param={}", JSONUtil.toJsonStr(param));
 
         QueryWrapper<SandboxTradePayoutOrder> queryWrapper = new QueryWrapper<>();
@@ -110,8 +110,8 @@ public class SandBoxTradeQueryServiceImpl implements SandBoxTradeQueryService {
             return PageDTO.empty();
         }
 
-        List<SandboxTradeCashOrderPageDTO> collect = page.getRecords().stream().map(e -> {
-            SandboxTradeCashOrderPageDTO dto = new SandboxTradeCashOrderPageDTO();
+        List<SandboxTradePayoutOrderPageDTO> collect = page.getRecords().stream().map(e -> {
+            SandboxTradePayoutOrderPageDTO dto = new SandboxTradePayoutOrderPageDTO();
             dto.setTradeNo(e.getTradeNo());
             dto.setOrderNo(e.getOrderNo());
             dto.setPaymentMethod(e.getPaymentMethod());

@@ -13,8 +13,8 @@ import api.sphere.controller.request.SandboxTradeForceSuccessReq;
 import share.sphere.enums.TradePayoutSourceEnum;
 import app.sphere.query.SandBoxTradeQueryService;
 import app.sphere.query.dto.PageDTO;
-import app.sphere.query.dto.SandboxTradeCashOrderPageDTO;
-import app.sphere.query.param.SandboxTradeCashOrderPageParam;
+import app.sphere.query.dto.SandboxTradePayoutOrderPageDTO;
+import app.sphere.query.param.SandboxTradePayoutOrderPageParam;
 import share.sphere.result.PageResult;
 import share.sphere.result.Result;
 import jakarta.annotation.Resource;
@@ -71,13 +71,13 @@ public class SandBoxTradeCashController {
     /**
      * 沙箱 分页查询沙箱代付单列表
      */
-    @PostMapping("sandbox/v1/pageCashOrderList")
-    public Mono<PageResult<SandboxTradeCashOrderPageDTO>> pageSandboxCashOrderList(@RequestBody @Validated
+    @PostMapping("sandbox/v1/pagePayoutOrderList")
+    public Mono<PageResult<SandboxTradePayoutOrderPageDTO>> pageSandboxCashOrderList(@RequestBody @Validated
                                                                                        SandboxTradeCashOrderPageReq req) {
         log.info("pageSandboxCashOrderList req={}", JSONUtil.toJsonStr(req));
-        SandboxTradeCashOrderPageParam param = sandboxTradeConverter.convertSandboxTradeCashOrderPageParam(req);
+        SandboxTradePayoutOrderPageParam param = sandboxTradeConverter.convertSandboxTradeCashOrderPageParam(req);
 
-        PageDTO<SandboxTradeCashOrderPageDTO> pageDTO = sandBoxTradeQueryService.pageSandboxCashOrderList(param);
+        PageDTO<SandboxTradePayoutOrderPageDTO> pageDTO = sandBoxTradeQueryService.pageSandboxCashOrderList(param);
         return Mono.just(PageResult.ok(pageDTO.getTotal(), pageDTO.getCurrent(), pageDTO.getData()));
     }
 
