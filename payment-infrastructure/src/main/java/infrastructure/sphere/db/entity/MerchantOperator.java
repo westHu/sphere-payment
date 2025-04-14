@@ -11,28 +11,15 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "merchant_operator")
-public class MerchantOperator extends BaseEntity {
+public class MerchantOperator extends BaseMerchantEntity {
 
-    // ============== 基础信息 ==============
-    /**
-     * 商户ID
-     * 操作员所属商户的唯一标识符
-     */
-    private String merchantId;
-
-    /**
-     * 商户名称
-     * 操作员所属商户的名称
-     */
-    private String merchantName;
-
+    // ============== 认证信息 ==============
     /**
      * 用户名
      * 操作员的登录用户名，全局唯一
      */
     private String username;
 
-    // ============== 认证信息 ==============
     /**
      * 密码
      * 操作员的登录密码，加密存储

@@ -1,8 +1,8 @@
 package app.sphere.query.impl;
 
 import app.sphere.query.SandboxTradeHistoryService;
-import domain.sphere.repository.SandboxTradePaymentOrderRepository;
-import domain.sphere.repository.SandboxTradePayoutOrderRepository;
+import domain.sphere.repository.TradeSandboxPaymentOrderRepository;
+import domain.sphere.repository.TradeSandboxPayoutOrderRepository;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 public class SandboxTradeHistoryServiceImpl implements SandboxTradeHistoryService {
 
     @Resource
-    SandboxTradePaymentOrderRepository sandboxTradePaymentOrderRepository;
+    TradeSandboxPaymentOrderRepository tradeSandboxPaymentOrderRepository;
     @Resource
-    SandboxTradePayoutOrderRepository sandboxTradePayoutOrderRepository;
+    TradeSandboxPayoutOrderRepository tradeSandboxPayoutOrderRepository;
 
    /* @Override
     public TradeOrderStatusInquiryDTO inquiryOrderStatus(TradeOrderStatusInquiryParam param) {

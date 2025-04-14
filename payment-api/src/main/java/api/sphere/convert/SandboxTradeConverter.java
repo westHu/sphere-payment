@@ -7,12 +7,9 @@ import api.sphere.controller.response.TradePayoutVO;
 import app.sphere.command.cmd.*;
 import app.sphere.command.dto.TradePaymentDTO;
 import app.sphere.command.dto.TradePayoutDTO;
-import app.sphere.query.dto.SandboxTradePaymentLinkOrderPageDTO;
 import app.sphere.query.param.*;
-import infrastructure.sphere.db.entity.SandboxTradePaymentLinkOrder;
 import org.mapstruct.Mapper;
-
-import java.util.List;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "Spring")
 public interface SandboxTradeConverter {
@@ -21,19 +18,15 @@ public interface SandboxTradeConverter {
 
     SandboxTradePayoutOrderPageParam convertSandboxTradeCashOrderPageParam(SandboxTradeCashOrderPageReq req);
 
+    @Mapping(target = "tradePaySource", ignore = true)
     TradePaymentCmd convertTradePayCommand(TradePaymentReq req);
 
     TradeCashierPaymentCmd convertTradeCashierPayCommand(TradeCashierPaymentReq req);
 
     CashierParam convertCashierParam(CashierReq req);
 
-    TradePayoutCommand convertTradeCashCommand(TradePayoutReq req);
-
-    TradePaymentLinkCmd convertTradePaymentLinkCommand(TradePaymentLinkReq req);
-
-    TradePaymentLinkPageParam convertTradePaymentLinkPageParam(TradePaymentLinkPageReq req);
-
-    List<SandboxTradePaymentLinkOrderPageDTO> convertSandboxTradePaymentLinkOrderPageDTOList(List<SandboxTradePaymentLinkOrder> records);
+    @Mapping(target = "tradePayoutSourceEnum", ignore = true)
+    TradePayoutCommand convertTradePayoutCommand(TradePayoutReq req);
 
     SandboxTradeForceSuccessCommand convertSandboxTradeForceSuccessCommand(SandboxTradeForceSuccessReq req);
 

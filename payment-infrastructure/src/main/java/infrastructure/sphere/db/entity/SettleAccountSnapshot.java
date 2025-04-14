@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "settle_account_snapshot")
-public class SettleAccountSnapshot extends BaseEntity {
+public class SettleAccountSnapshot extends BaseSettleEntity {
 
     // ============== 时间信息 ==============
     /**
@@ -24,11 +24,6 @@ public class SettleAccountSnapshot extends BaseEntity {
     private LocalDate accountDate;
 
     // ============== 账户信息 ==============
-    /**
-     * 账户号
-     * 账户的唯一标识符
-     */
-    private String accountNo;
 
     /**
      * 账户名称
@@ -44,18 +39,6 @@ public class SettleAccountSnapshot extends BaseEntity {
      */
     private Integer accountType;
 
-    // ============== 商户信息 ==============
-    /**
-     * 商户ID
-     * 商户的唯一标识符
-     */
-    private String merchantId;
-
-    /**
-     * 商户名称
-     * 商户的显示名称
-     */
-    private String merchantName;
 
     // ============== 余额信息 ==============
     /**

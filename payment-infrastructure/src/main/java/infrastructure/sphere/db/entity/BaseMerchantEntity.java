@@ -8,24 +8,24 @@ import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 
 /**
- * 基础实体类
+ * 商户基础实体类
  * 所有数据库实体类的父类，提供基础字段
  */
 @Data
-public class BaseEntity {
+@EqualsAndHashCode(callSuper = false)
+public class BaseMerchantEntity extends BaseEntity {
+
+
+    // ============== 基础信息 ==============
     /**
-     * 主键ID
+     * 商户ID
+     * 商户的唯一标识符
      */
-    @TableId(type = IdType.AUTO)
-    private Long id;
+    private String merchantId;
 
     /**
-     * 创建时间
+     * 商户名称
+     * 商户的正式名称
      */
-    private LocalDateTime createTime = LocalDateTime.now();
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
+    private String merchantName;
 }

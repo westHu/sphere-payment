@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 @TableName(value = "settle_account")
 public class SettleAccount extends BaseEntity {
 
+    // ============== 基本信息 ==============
     /**
      * 商户ID
      */
@@ -40,6 +41,7 @@ public class SettleAccount extends BaseEntity {
      */
     private String accountName;
 
+    // ============== 余额信息 ==============
     /**
      * 币种
      */
@@ -60,6 +62,7 @@ public class SettleAccount extends BaseEntity {
      */
     private BigDecimal toSettleBalance;
 
+    // ============== 配置信息 ==============
     /**
      * 状态
      */
@@ -70,6 +73,7 @@ public class SettleAccount extends BaseEntity {
      */
     private String region;
 
+    // ============== 系统信息 ==============
     /**
      * 版本
      */

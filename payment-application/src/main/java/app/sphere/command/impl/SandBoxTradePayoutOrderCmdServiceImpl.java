@@ -11,8 +11,8 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import domain.sphere.repository.SandboxMerchantConfigRepository;
-import domain.sphere.repository.SandboxTradePayoutOrderRepository;
+import domain.sphere.repository.MerchantSandboxConfigRepository;
+import domain.sphere.repository.TradeSandboxPayoutOrderRepository;
 import infrastructure.sphere.db.entity.*;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -47,9 +47,9 @@ import static share.sphere.TradeConstant.LIMIT_1;
 public class SandBoxTradePayoutOrderCmdServiceImpl implements SandBoxTradeCashOrderCmdService {
 
     @Resource
-    SandboxTradePayoutOrderRepository sandboxTradePayoutOrderRepository;
+    TradeSandboxPayoutOrderRepository tradeSandboxPayoutOrderRepository;
     @Resource
-    SandboxMerchantConfigRepository sandboxMerchantConfigRepository;
+    MerchantSandboxConfigRepository merchantSandboxConfigRepository;
     @Resource
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
     @Resource
@@ -71,32 +71,32 @@ public class SandBoxTradePayoutOrderCmdServiceImpl implements SandBoxTradeCashOr
         String merchantId = command.getMerchant().getMerchantId();
 
         // 校验外部单号, 只查询orderNo
-        QueryWrapper<SandboxTradePayoutOrder> orderQuery = new QueryWrapper<>();
+        QueryWrapper<TradeSandboxPayoutOrder> orderQuery = new QueryWrapper<>();
         orderQuery.select("order_no as orderNo");
-        orderQuery.lambda().eq(SandboxTradePayoutOrder::getOrderNo, orderNo).last(TradeConstant.LIMIT_1);
-        SandboxTradePayoutOrder cashOrder = sandboxTradePayoutOrderRepository.getOne(orderQuery);
+        orderQuery.lambda().eq(TradeSandboxPayoutOrder::getOrderNo, orderNo).last(TradeConstant.LIMIT_1);
+        TradeSandboxPayoutOrder cashOrder = tradeSandboxPayoutOrderRepository.getOne(orderQuery);
         Assert.isNull(cashOrder, () -> new PaymentException(ExceptionCode.TRADE_ORDER_NOT_FOUND, orderNo));
 
         // 校验商户配置 & 保存订单信息
         // 获取商户沙箱配置
-        QueryWrapper<SandboxMerchantConfig> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SandboxMerchantConfig::getMerchantId, merchantId).last(LIMIT_1);
-        SandboxMerchantConfig sandboxMerchantConfig = sandboxMerchantConfigRepository.getOne(queryWrapper);
-        Assert.notNull(sandboxMerchantConfig, () -> new PaymentException(ExceptionCode.MERCHANT_CONFIG_NOT_EXIST, merchantId));
+        QueryWrapper<MerchantSandboxConfig> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(MerchantSandboxConfig::getMerchantId, merchantId).last(LIMIT_1);
+        MerchantSandboxConfig merchantSandboxConfig = merchantSandboxConfigRepository.getOne(queryWrapper);
+        Assert.notNull(merchantSandboxConfig, () -> new PaymentException(ExceptionCode.MERCHANT_CONFIG_NOT_EXIST, merchantId));
 
         //构建基本商户信息
         Merchant merchant = new Merchant();
-        merchant.setMerchantId(sandboxMerchantConfig.getMerchantId());
-        merchant.setMerchantName(sandboxMerchantConfig.getMerchantName());
+        merchant.setMerchantId(merchantSandboxConfig.getMerchantId());
+        merchant.setMerchantName(merchantSandboxConfig.getMerchantName());
 
         //构建商户沙箱配置
         MerchantConfig configDTO = new MerchantConfig();
-        BeanUtils.copyProperties(sandboxMerchantConfig, configDTO);
+        BeanUtils.copyProperties(merchantSandboxConfig, configDTO);
         MerchantTradeDTO merchantTradeDTO = new MerchantTradeDTO();
         merchantTradeDTO.setMerchant(merchant);
         merchantTradeDTO.setMerchantConfig(configDTO);
 
-        SandboxTradePayoutOrder order = saveSandboxTradeCashOrder(command, merchantTradeDTO);
+        TradeSandboxPayoutOrder order = saveSandboxTradeCashOrder(command, merchantTradeDTO);
 
         log.info("[沙箱代付] 代付请求处理完成, orderNo={}, tradeNo={}", orderNo, order.getTradeNo());
         return buildTradeCashDTO(order);
@@ -115,9 +115,9 @@ public class SandBoxTradePayoutOrderCmdServiceImpl implements SandBoxTradeCashOr
         String tradeNo = command.getTradeNo();
 
         // 校验订单是否存在
-        QueryWrapper<SandboxTradePayoutOrder> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SandboxTradePayoutOrder::getTradeNo, tradeNo).last(TradeConstant.LIMIT_1);
-        SandboxTradePayoutOrder order = sandboxTradePayoutOrderRepository.getOne(queryWrapper);
+        QueryWrapper<TradeSandboxPayoutOrder> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(TradeSandboxPayoutOrder::getTradeNo, tradeNo).last(TradeConstant.LIMIT_1);
+        TradeSandboxPayoutOrder order = tradeSandboxPayoutOrderRepository.getOne(queryWrapper);
         Assert.notNull(order, () -> new PaymentException(ExceptionCode.TRADE_ORDER_NOT_FOUND, tradeNo));
 
         // 如果下单未成功，则不能强制支付成功、失败
@@ -134,11 +134,11 @@ public class SandBoxTradePayoutOrderCmdServiceImpl implements SandBoxTradeCashOr
                 ? PaymentStatusEnum.PAYMENT_SUCCESS : PaymentStatusEnum.PAYMENT_FAILED;
         log.info("sandboxCashForceSuccessOrFailed paymentStatus={}", paymentStatus.name());
 
-        UpdateWrapper<SandboxTradePayoutOrder> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.lambda().set(SandboxTradePayoutOrder::getPaymentStatus, paymentStatus.getCode())
-                .set(SandboxTradePayoutOrder::getPaymentFinishTime, LocalDateTime.now())
-                .eq(SandboxTradePayoutOrder::getId, order.getId());
-        sandboxTradePayoutOrderRepository.update(updateWrapper);
+        UpdateWrapper<TradeSandboxPayoutOrder> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.lambda().set(TradeSandboxPayoutOrder::getPaymentStatus, paymentStatus.getCode())
+                .set(TradeSandboxPayoutOrder::getPaymentFinishTime, LocalDateTime.now())
+                .eq(TradeSandboxPayoutOrder::getId, order.getId());
+        tradeSandboxPayoutOrderRepository.update(updateWrapper);
 
         threadPoolTaskExecutor.execute(() -> sandboxCallback(order, paymentStatus));
         log.info("[沙箱代付] 订单状态强制设置完成, tradeNo={}, status={}", tradeNo, paymentStatus.name());
@@ -153,7 +153,7 @@ public class SandBoxTradePayoutOrderCmdServiceImpl implements SandBoxTradeCashOr
      * @param order 沙箱代付订单实体
      * @return TradePayoutDTO 代付返回DTO
      */
-    private TradePayoutDTO buildTradeCashDTO(SandboxTradePayoutOrder order) {
+    private TradePayoutDTO buildTradeCashDTO(TradeSandboxPayoutOrder order) {
         log.debug("[沙箱代付] 开始构建代付返回数据, tradeNo={}", order.getTradeNo());
         
         TradePayoutDTO dto = new TradePayoutDTO();
@@ -189,7 +189,7 @@ public class SandBoxTradePayoutOrderCmdServiceImpl implements SandBoxTradeCashOr
      * @param merchantTradeDTO 商户交易DTO
      * @return SandboxTradePayoutOrder 保存的沙箱代付订单实体
      */
-    private SandboxTradePayoutOrder saveSandboxTradeCashOrder(TradePayoutCommand command, MerchantTradeDTO merchantTradeDTO) {
+    private TradeSandboxPayoutOrder saveSandboxTradeCashOrder(TradePayoutCommand command, MerchantTradeDTO merchantTradeDTO) {
         log.debug("[沙箱代付] 开始保存代付订单, orderNo={}", command.getOrderNo());
         
         merchantTradeDTO.getMerchantConfig().setPublicKey("*");
@@ -202,7 +202,7 @@ public class SandBoxTradePayoutOrderCmdServiceImpl implements SandBoxTradeCashOr
                 .orElse(merchantBaseDTO.getMerchantName());
         String tradeNo = TradeConstant.EXPERIENCE_CASHIER_PREFIX + orderNoManager.getTradeNo(command.getRegion(), TradeTypeEnum.PAYOUT, merchantBaseDTO.getMerchantId());
 
-        SandboxTradePayoutOrder order = new SandboxTradePayoutOrder();
+        TradeSandboxPayoutOrder order = new TradeSandboxPayoutOrder();
         order.setTradeNo(tradeNo);
         order.setOrderNo(command.getOrderNo());
         order.setPurpose(command.getPurpose());
@@ -237,7 +237,7 @@ public class SandBoxTradePayoutOrderCmdServiceImpl implements SandBoxTradeCashOr
         order.setVersion(TradeConstant.INIT_VERSION);
         order.setRegion(command.getRegion());
         order.setCreateTime(LocalDateTime.now());
-        sandboxTradePayoutOrderRepository.save(order);
+        tradeSandboxPayoutOrderRepository.save(order);
         log.debug("[沙箱代付] 代付订单保存完成, orderNo={}, tradeNo={}", command.getOrderNo(), order.getTradeNo());
         return order;
     }
@@ -249,13 +249,13 @@ public class SandBoxTradePayoutOrderCmdServiceImpl implements SandBoxTradeCashOr
      * @param order 沙箱代付订单实体
      * @param paymentStatus 支付状态枚举
      */
-    private void sandboxCallback(SandboxTradePayoutOrder order, PaymentStatusEnum paymentStatus) {
+    private void sandboxCallback(TradeSandboxPayoutOrder order, PaymentStatusEnum paymentStatus) {
         log.info("[沙箱代付回调] 开始处理代付回调, tradeNo={}, status={}", order.getTradeNo(), paymentStatus.name());
         
         String tradeNo = order.getTradeNo();
 
         // 回调地址
-        String finishCashUrl = Optional.of(order).map(SandboxTradePayoutOrder::getTradeResult)
+        String finishCashUrl = Optional.of(order).map(TradeSandboxPayoutOrder::getTradeResult)
                 .map(e -> JSONUtil.toBean(e, MerchantTradeDTO.class))
                 .map(MerchantTradeDTO::getMerchantConfig)
                 .map(MerchantConfig::getFinishPayoutUrl)
@@ -305,17 +305,17 @@ public class SandBoxTradePayoutOrderCmdServiceImpl implements SandBoxTradeCashOr
             log.info("sandboxCallback tradeNo={} result={}", tradeNo, callback);
 
             // 更新数据
-            UpdateWrapper<SandboxTradePayoutOrder> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.lambda().set(SandboxTradePayoutOrder::getCallBackStatus, CallBackStatusEnum.CALLBACK_SUCCESS.getCode())
-                    .eq(SandboxTradePayoutOrder::getId, order.getId());
-            sandboxTradePayoutOrderRepository.update(updateWrapper);
+            UpdateWrapper<TradeSandboxPayoutOrder> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.lambda().set(TradeSandboxPayoutOrder::getCallBackStatus, CallBackStatusEnum.CALLBACK_SUCCESS.getCode())
+                    .eq(TradeSandboxPayoutOrder::getId, order.getId());
+            tradeSandboxPayoutOrderRepository.update(updateWrapper);
         } catch (Exception e) {
 
             log.error("sandboxCallback tradeNo={} exception", tradeNo, e);
-            UpdateWrapper<SandboxTradePayoutOrder> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.lambda().set(SandboxTradePayoutOrder::getCallBackStatus, CallBackStatusEnum.CALLBACK_FAILED.getCode())
-                    .eq(SandboxTradePayoutOrder::getId, order.getId());
-            sandboxTradePayoutOrderRepository.update(updateWrapper);
+            UpdateWrapper<TradeSandboxPayoutOrder> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.lambda().set(TradeSandboxPayoutOrder::getCallBackStatus, CallBackStatusEnum.CALLBACK_FAILED.getCode())
+                    .eq(TradeSandboxPayoutOrder::getId, order.getId());
+            tradeSandboxPayoutOrderRepository.update(updateWrapper);
         }
         
         log.info("[沙箱代付回调] 代付回调处理完成, tradeNo={}, callbackStatus={}", order.getTradeNo(), order.getCallBackStatus());

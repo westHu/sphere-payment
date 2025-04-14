@@ -13,21 +13,9 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "payment_channel_method")
-public class PaymentChannelMethod extends BaseEntity {
+public class PaymentChannelMethod extends BasePaymentEntity {
 
-    // ============== 基础信息 ==============
-    /**
-     * 渠道编码
-     * 关联的支付渠道编码
-     */
-    private String channelCode;
-
-    /**
-     * 渠道名称
-     * 关联的支付渠道名称
-     */
-    private String channelName;
-
+    // ============== 基础信息 =============
     /**
      * 支付方式编码
      * 支持的支付方式编码，如：ALIPAY_APP、WECHAT_APP等

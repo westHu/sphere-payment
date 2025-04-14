@@ -49,11 +49,9 @@ import static share.sphere.TradeConstant.LIMIT_1;
 public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderCmdService {
 
     @Resource
-    SandboxTradePaymentOrderRepository sandboxTradePaymentOrderRepository;
+    TradeSandboxPaymentOrderRepository tradeSandboxPaymentOrderRepository;
     @Resource
-    SandboxTradePaymentLinkOrderRepository sandboxTradePaymentLinkOrderRepository;
-    @Resource
-    SandboxMerchantConfigRepository sandboxMerchantConfigRepository;
+    MerchantSandboxConfigRepository merchantSandboxConfigRepository;
     @Resource
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
     @Resource
@@ -75,26 +73,26 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
         String merchantId = command.getMerchant().getMerchantId();
 
         // 判断是否存在，只查询orderNo，不应该存在
-        QueryWrapper<SandboxTradePaymentOrder> orderQuery = new QueryWrapper<>();
+        QueryWrapper<TradeSandboxPaymentOrder> orderQuery = new QueryWrapper<>();
         orderQuery.select("order_no as orderNo");
-        orderQuery.lambda().eq(SandboxTradePaymentOrder::getOrderNo, orderNo).last(LIMIT_1);
-        SandboxTradePaymentOrder payOrder = sandboxTradePaymentOrderRepository.getOne(orderQuery);
+        orderQuery.lambda().eq(TradeSandboxPaymentOrder::getOrderNo, orderNo).last(LIMIT_1);
+        TradeSandboxPaymentOrder payOrder = tradeSandboxPaymentOrderRepository.getOne(orderQuery);
         Assert.isNull(payOrder, () -> new PaymentException(ExceptionCode.TRADE_ORDER_NOT_FOUND, orderNo));
 
         // 获取商户沙箱配置
-        QueryWrapper<SandboxMerchantConfig> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SandboxMerchantConfig::getMerchantId, merchantId).last(LIMIT_1);
-        SandboxMerchantConfig sandboxMerchantConfig = sandboxMerchantConfigRepository.getOne(queryWrapper);
-        Assert.notNull(sandboxMerchantConfig, () -> new PaymentException(ExceptionCode.MERCHANT_CONFIG_NOT_EXIST, merchantId));
+        QueryWrapper<MerchantSandboxConfig> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(MerchantSandboxConfig::getMerchantId, merchantId).last(LIMIT_1);
+        MerchantSandboxConfig merchantSandboxConfig = merchantSandboxConfigRepository.getOne(queryWrapper);
+        Assert.notNull(merchantSandboxConfig, () -> new PaymentException(ExceptionCode.MERCHANT_CONFIG_NOT_EXIST, merchantId));
 
         //构建基本商户信息
         Merchant merchant = new Merchant();
-        merchant.setMerchantId(sandboxMerchantConfig.getMerchantId());
-        merchant.setMerchantName(sandboxMerchantConfig.getMerchantName());
+        merchant.setMerchantId(merchantSandboxConfig.getMerchantId());
+        merchant.setMerchantName(merchantSandboxConfig.getMerchantName());
 
         //构建商户沙箱配置
         MerchantConfig configDTO = new MerchantConfig();
-        BeanUtils.copyProperties(sandboxMerchantConfig, configDTO);
+        BeanUtils.copyProperties(merchantSandboxConfig, configDTO);
         MerchantTradeDTO merchantTradeDTO = new MerchantTradeDTO();
         merchantTradeDTO.setMerchant(merchant);
         merchantTradeDTO.setMerchantConfig(configDTO);
@@ -118,9 +116,9 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
         String tradeNo = command.getTradeNo();
 
         // 订单是否存在
-        QueryWrapper<SandboxTradePaymentOrder> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SandboxTradePaymentOrder::getTradeNo, tradeNo).last(LIMIT_1);
-        SandboxTradePaymentOrder order = sandboxTradePaymentOrderRepository.getOne(queryWrapper);
+        QueryWrapper<TradeSandboxPaymentOrder> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(TradeSandboxPaymentOrder::getTradeNo, tradeNo).last(LIMIT_1);
+        TradeSandboxPaymentOrder order = tradeSandboxPaymentOrderRepository.getOne(queryWrapper);
         Assert.notNull(order, () -> new PaymentException(ExceptionCode.TRADE_ORDER_NOT_FOUND, tradeNo));
 
         // 如果已经失败，则异常
@@ -133,28 +131,18 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
         }
 
         // 再次确认是否过期
-        Integer expiryPeriod = Optional.of(order).map(SandboxTradePaymentOrder::getAttribute)
+        Integer expiryPeriod = Optional.of(order).map(TradeSandboxPaymentOrder::getAttribute)
                 .map(e -> JSONUtil.toBean(e, TradePaymentAttributeDTO.class))
                 .map(TradePaymentAttributeDTO::getExpiryPeriod)
                 .orElse(TradeConstant.TRADE_EXPIRY_PERIOD_MAX);
         long seconds = System.currentTimeMillis() - order.getTradeTime();
         if (seconds > expiryPeriod) {
             Integer tradeStatus = TradeStatusEnum.TRADE_EXPIRED.getCode();
-            UpdateWrapper<SandboxTradePaymentOrder> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.lambda().set(SandboxTradePaymentOrder::getTradeStatus, tradeStatus)
-                    .eq(SandboxTradePaymentOrder::getId, order.getId());
-            sandboxTradePaymentOrderRepository.update(updateWrapper);
+            UpdateWrapper<TradeSandboxPaymentOrder> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.lambda().set(TradeSandboxPaymentOrder::getTradeStatus, tradeStatus)
+                    .eq(TradeSandboxPaymentOrder::getId, order.getId());
+            tradeSandboxPaymentOrderRepository.update(updateWrapper);
 
-            // 订单来源
-            TradePaymentSourceEnum tradePaymentSourceEnum = TradePaymentSourceEnum.codeToEnum(order.getSource());
-            log.info("sphere doCashierPay tradePaySourceEnum={}", tradePaymentSourceEnum.name());
-            if (TradePaymentSourceEnum.PAY_LINK.equals(tradePaymentSourceEnum)) {
-                Integer paymentLinkStatus = TradePaymentLinkStatusEnum.PAYMENT_LINK_EXPIRED.getCode();
-                UpdateWrapper<SandboxTradePaymentLinkOrder> linkUpdate = new UpdateWrapper<>();
-                linkUpdate.lambda().set(SandboxTradePaymentLinkOrder::getLinkStatus, paymentLinkStatus)
-                        .eq(SandboxTradePaymentLinkOrder::getLinkNo, order.getOrderNo());
-                sandboxTradePaymentLinkOrderRepository.update(linkUpdate);
-            }
             throw new PaymentException(ExceptionCode.TRADE_ORDER_HAS_EXPIRED, order.getTradeNo());
         }
 
@@ -178,28 +166,16 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
 
         // 设置支付方式, 象征意义
         order.setPaymentMethod(command.getPaymentMethod());
-        UpdateWrapper<SandboxTradePaymentOrder> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.lambda().set(SandboxTradePaymentOrder::getPaymentMethod, order.getPaymentMethod())
-                .set(SandboxTradePaymentOrder::getTradeStatus, TradeStatusEnum.TRADE_SUCCESS.getCode())
-                .set(SandboxTradePaymentOrder::getMerchantProfit, BigDecimal.ZERO) // 商户分润
-                .set(SandboxTradePaymentOrder::getMerchantFee, BigDecimal.ZERO) // 商户手续费
-                .set(SandboxTradePaymentOrder::getAccountAmount, order.getAmount()) // 到账金额
-                .set(SandboxTradePaymentOrder::getChannelCost, BigDecimal.ZERO) // 通道成本
-                .set(SandboxTradePaymentOrder::getPlatformProfit, BigDecimal.ZERO) // 平台利润
-                .eq(SandboxTradePaymentOrder::getId, order.getId());
-        sandboxTradePaymentOrderRepository.update(updateWrapper);
-
-        // 如果是支付链接
-        boolean isPaymentLink = Optional.ofNullable(order.getSource())
-                .map(e -> e.equals(TradePaymentSourceEnum.PAY_LINK.getCode()))
-                .orElse(false);
-        if (isPaymentLink) {
-            UpdateWrapper<SandboxTradePaymentLinkOrder> linkOrderUpdate = new UpdateWrapper<>();
-            linkOrderUpdate.lambda()
-                    .set(SandboxTradePaymentLinkOrder::getLinkStatus, TradePaymentLinkStatusEnum.PAYMENT_LINK_PROCESSING.getCode())
-                    .eq(SandboxTradePaymentLinkOrder::getLinkNo, order.getOrderNo());
-            sandboxTradePaymentLinkOrderRepository.update(linkOrderUpdate);
-        }
+        UpdateWrapper<TradeSandboxPaymentOrder> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.lambda().set(TradeSandboxPaymentOrder::getPaymentMethod, order.getPaymentMethod())
+                .set(TradeSandboxPaymentOrder::getTradeStatus, TradeStatusEnum.TRADE_SUCCESS.getCode())
+                .set(TradeSandboxPaymentOrder::getMerchantProfit, BigDecimal.ZERO) // 商户分润
+                .set(TradeSandboxPaymentOrder::getMerchantFee, BigDecimal.ZERO) // 商户手续费
+                .set(TradeSandboxPaymentOrder::getAccountAmount, order.getAmount()) // 到账金额
+                .set(TradeSandboxPaymentOrder::getChannelCost, BigDecimal.ZERO) // 通道成本
+                .set(TradeSandboxPaymentOrder::getPlatformProfit, BigDecimal.ZERO) // 平台利润
+                .eq(TradeSandboxPaymentOrder::getId, order.getId());
+        tradeSandboxPaymentOrderRepository.update(updateWrapper);
 
         // 构建收银台返回数据
         return buildTradeCashierPayDTO(order);
@@ -218,9 +194,9 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
         String tradeNo = command.getTradeNo();
 
         // 校验订单是否存在
-        QueryWrapper<SandboxTradePaymentOrder> payOrderQuery = new QueryWrapper<>();
-        payOrderQuery.lambda().eq(SandboxTradePaymentOrder::getTradeNo, tradeNo).last(LIMIT_1);
-        SandboxTradePaymentOrder order = sandboxTradePaymentOrderRepository.getOne(payOrderQuery);
+        QueryWrapper<TradeSandboxPaymentOrder> payOrderQuery = new QueryWrapper<>();
+        payOrderQuery.lambda().eq(TradeSandboxPaymentOrder::getTradeNo, tradeNo).last(LIMIT_1);
+        TradeSandboxPaymentOrder order = tradeSandboxPaymentOrderRepository.getOne(payOrderQuery);
         Assert.notNull(order, () -> new PaymentException(ExceptionCode.TRADE_ORDER_NOT_FOUND, tradeNo));
 
         // 如果下单未成功，则不能强制支付成功、失败
@@ -238,27 +214,11 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
                 ? PaymentStatusEnum.PAYMENT_SUCCESS : PaymentStatusEnum.PAYMENT_FAILED;
         log.info("sandboxPayForceSuccessOrFailed paymentStatus={}", paymentStatus.name());
 
-        UpdateWrapper<SandboxTradePaymentOrder> payOrderUpdate = new UpdateWrapper<>();
-        payOrderUpdate.lambda().set(SandboxTradePaymentOrder::getPaymentStatus, paymentStatus.getCode())
-                .set(SandboxTradePaymentOrder::getPaymentFinishTime, LocalDateTime.now())
-                .eq(SandboxTradePaymentOrder::getId, order.getId());
-        sandboxTradePaymentOrderRepository.update(payOrderUpdate);
-
-        // 如果是 paymentLink
-        boolean isPaymentLink = Optional.ofNullable(order.getSource())
-                .map(e -> e.equals(TradePaymentSourceEnum.PAY_LINK.getCode()))
-                .orElse(false);
-        if (isPaymentLink) {
-            TradePaymentLinkStatusEnum paymentLinkStatusEnum = command.isSuccess() ?
-                    TradePaymentLinkStatusEnum.PAYMENT_LINK_SUCCESS :
-                    TradePaymentLinkStatusEnum.PAYMENT_LINK_FAILED;
-
-            UpdateWrapper<SandboxTradePaymentLinkOrder> linkOrderUpdate = new UpdateWrapper<>();
-            linkOrderUpdate.lambda()
-                    .set(SandboxTradePaymentLinkOrder::getLinkStatus, paymentLinkStatusEnum.getCode())
-                    .eq(SandboxTradePaymentLinkOrder::getLinkNo, order.getOrderNo());
-            sandboxTradePaymentLinkOrderRepository.update(linkOrderUpdate);
-        }
+        UpdateWrapper<TradeSandboxPaymentOrder> payOrderUpdate = new UpdateWrapper<>();
+        payOrderUpdate.lambda().set(TradeSandboxPaymentOrder::getPaymentStatus, paymentStatus.getCode())
+                .set(TradeSandboxPaymentOrder::getPaymentFinishTime, LocalDateTime.now())
+                .eq(TradeSandboxPaymentOrder::getId, order.getId());
+        tradeSandboxPaymentOrderRepository.update(payOrderUpdate);
 
         // API订单执行回调，其他不需要 譬如 PayLink. 异步执行
         threadPoolTaskExecutor.execute(() -> sandboxCallback(order, paymentStatus));
@@ -323,28 +283,6 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
         payCommand.setReceiver(receiver);
         payCommand.setTradePaySource(TradePaymentSourceEnum.PAY_LINK);
         TradePaymentDTO tradePaymentDTO = this.executeSandBoxPay(payCommand);
-
-        // 收银台地址
-        String paymentUrl = Optional.of(tradePaymentDTO).map(TradePaymentDTO::getChannel)
-                .map(TradePayChannelDTO::getPaymentUrl)
-                .orElse(null);
-
-        // 得到收银台地址，再保存支付链接
-        SandboxTradePaymentLinkOrder paymentLinkOrder = new SandboxTradePaymentLinkOrder();
-        paymentLinkOrder.setLinkNo(payCommand.getOrderNo());
-        paymentLinkOrder.setMerchantId(command.getMerchantId());
-        paymentLinkOrder.setMerchantName(command.getMerchantName());
-        paymentLinkOrder.setPaymentMethod(command.getPaymentMethod());
-        paymentLinkOrder.setCurrency(command.getCurrency());
-        paymentLinkOrder.setAmount(command.getAmount());
-        paymentLinkOrder.setNotes(command.getNotes());
-        paymentLinkOrder.setPaymentLink(paymentUrl);
-
-        // 如果支付方式空，则初始，否则进行中
-        TradePaymentLinkStatusEnum linkStatusEnum = StringUtils.isBlank(command.getPaymentMethod()) ?
-                TradePaymentLinkStatusEnum.PAYMENT_LINK_INIT : TradePaymentLinkStatusEnum.PAYMENT_LINK_PROCESSING;
-        paymentLinkOrder.setLinkStatus(linkStatusEnum.getCode());
-        sandboxTradePaymentLinkOrderRepository.save(paymentLinkOrder);
         
         log.info("[沙箱支付链接] 支付链接创建完成, linkNo={}", payCommand.getOrderNo());
         return payCommand.getOrderNo();
@@ -356,7 +294,7 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
      * @param order 沙箱支付订单实体
      * @return TradeCashierPaymentDTO 收银台支付返回DTO
      */
-    private TradeCashierPaymentDTO buildTradeCashierPayDTO(SandboxTradePaymentOrder order) {
+    private TradeCashierPaymentDTO buildTradeCashierPayDTO(TradeSandboxPaymentOrder order) {
         log.debug("[沙箱收银台] 开始构建收银台支付返回数据, tradeNo={}", order.getTradeNo());
         
         TradeCashierPaymentDTO dto = new TradeCashierPaymentDTO();
@@ -385,7 +323,7 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
         log.debug("[沙箱支付] 开始构建收银台支付数据, orderNo={}", command.getOrderNo());
         
         // 保存订单
-        SandboxTradePaymentOrder order = saveSandboxTradePayOrder(command, merchantTradeDTO, TradeStatusEnum.TRADE_INIT);
+        TradeSandboxPaymentOrder order = saveSandboxTradePayOrder(command, merchantTradeDTO, TradeStatusEnum.TRADE_INIT);
 
         // 返回收银台
         TradePaymentDTO dto = new TradePaymentDTO();
@@ -421,7 +359,7 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
      * @param tradeStatusEnum 交易状态枚举
      * @return SandboxTradePaymentOrder 保存的沙箱支付订单实体
      */
-    private SandboxTradePaymentOrder saveSandboxTradePayOrder(TradePaymentCmd command,
+    private TradeSandboxPaymentOrder saveSandboxTradePayOrder(TradePaymentCmd command,
                                                               MerchantTradeDTO merchantTradeDTO,
                                                               TradeStatusEnum tradeStatusEnum) {
         log.debug("[沙箱支付] 开始保存支付订单, orderNo={}", command.getOrderNo());
@@ -436,7 +374,7 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
                 .orElse(merchantBaseDTO.getMerchantName());
         String tradeNo = TradeConstant.EXPERIENCE_CASHIER_PREFIX + orderNoManager.getTradeNo(command.getRegion(), TradeTypeEnum.PAYMENT, merchantBaseDTO.getMerchantId());
 
-        SandboxTradePaymentOrder order = new SandboxTradePaymentOrder();
+        TradeSandboxPaymentOrder order = new TradeSandboxPaymentOrder();
         order.setTradeNo(tradeNo);
         order.setOrderNo(command.getOrderNo());
 
@@ -477,7 +415,7 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
         order.setSource(command.getTradePaySource().getCode());
         order.setVersion(TradeConstant.INIT_VERSION);
         order.setCreateTime(LocalDateTime.now());
-        boolean save = sandboxTradePaymentOrderRepository.save(order);
+        boolean save = tradeSandboxPaymentOrderRepository.save(order);
         Assert.isTrue(save, () -> new PaymentException(ExceptionCode.SYSTEM_BUSY, order.getOrderNo()));
         
         log.debug("[沙箱支付] 支付订单保存完成, orderNo={}, tradeNo={}", command.getOrderNo(), order.getTradeNo());
@@ -508,7 +446,7 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
         }
 
         // 保存SUCCESS订单
-        SandboxTradePaymentOrder order = saveSandboxTradePayOrder(command, merchantDTO, TradeStatusEnum.TRADE_SUCCESS);
+        TradeSandboxPaymentOrder order = saveSandboxTradePayOrder(command, merchantDTO, TradeStatusEnum.TRADE_SUCCESS);
 
         // 返回Va等
         TradePaymentDTO dto = new TradePaymentDTO();
@@ -546,7 +484,7 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
      * @param paymentStatus 支付状态枚举
      */
     @SneakyThrows
-    private void sandboxCallback(SandboxTradePaymentOrder order, PaymentStatusEnum paymentStatus) {
+    private void sandboxCallback(TradeSandboxPaymentOrder order, PaymentStatusEnum paymentStatus) {
         log.info("[沙箱支付回调] 开始处理支付回调, tradeNo={}, status={}", order.getTradeNo(), paymentStatus.name());
         
         String tradeNo = order.getTradeNo();
@@ -559,7 +497,7 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
         }
 
         // 回调地址
-        String finishPaymentUrl = Optional.of(order).map(SandboxTradePaymentOrder::getTradeResult)
+        String finishPaymentUrl = Optional.of(order).map(TradeSandboxPaymentOrder::getTradeResult)
                 .map(e -> JSONUtil.toBean(e, MerchantTradeDTO.class))
                 .map(MerchantTradeDTO::getMerchantConfig)
                 .map(MerchantConfig::getFinishPaymentUrl)
@@ -608,16 +546,16 @@ public class SandBoxTradePayOrderCmdServiceImpl implements SandBoxTradePayOrderC
             log.info("sandboxPayCallbackToMerchant tradeNo={} result={}", tradeNo, callback);
 
             // 更新数据
-            UpdateWrapper<SandboxTradePaymentOrder> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.lambda().set(SandboxTradePaymentOrder::getCallBackStatus, CallBackStatusEnum.CALLBACK_SUCCESS.getCode())
-                    .eq(SandboxTradePaymentOrder::getId, order.getId());
-            sandboxTradePaymentOrderRepository.update(updateWrapper);
+            UpdateWrapper<TradeSandboxPaymentOrder> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.lambda().set(TradeSandboxPaymentOrder::getCallBackStatus, CallBackStatusEnum.CALLBACK_SUCCESS.getCode())
+                    .eq(TradeSandboxPaymentOrder::getId, order.getId());
+            tradeSandboxPaymentOrderRepository.update(updateWrapper);
         } catch (Exception e) {
             log.error("sandboxPayCallbackToMerchant tradeNo={} exception", tradeNo, e);
-            UpdateWrapper<SandboxTradePaymentOrder> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.lambda().set(SandboxTradePaymentOrder::getCallBackStatus, CallBackStatusEnum.CALLBACK_FAILED.getCode())
-                    .eq(SandboxTradePaymentOrder::getId, order.getId());
-            sandboxTradePaymentOrderRepository.update(updateWrapper);
+            UpdateWrapper<TradeSandboxPaymentOrder> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.lambda().set(TradeSandboxPaymentOrder::getCallBackStatus, CallBackStatusEnum.CALLBACK_FAILED.getCode())
+                    .eq(TradeSandboxPaymentOrder::getId, order.getId());
+            tradeSandboxPaymentOrderRepository.update(updateWrapper);
         }
         
         log.info("[沙箱支付回调] 支付回调处理完成, tradeNo={}, callbackStatus={}", order.getTradeNo(), order.getCallBackStatus());

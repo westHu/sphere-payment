@@ -20,12 +20,6 @@ public class PaymentMethod extends BaseEntity {
      */
     private String paymentMethod;
 
-    /**
-     * 支付方式名称
-     * 支付方式的显示名称，如：支付宝APP支付、微信APP支付等
-     */
-    private String paymentName;
-
     // ============== 支付配置 ==============
     /**
      * 支付方向

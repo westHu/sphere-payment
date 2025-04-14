@@ -12,18 +12,14 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "trade_recharge_order")
-public class TradeRechargeOrder extends BaseEntity {
+public class TradeRechargeOrder extends BaseTradeEntity {
 
-    // ================ 订单基础信息 ================
+    // ============== 商品信息 ==============
     /**
-     * 充值单号 - 系统生成的唯一订单号
+     * 商品详情
+     * 订单相关的商品或服务信息，JSON格式
      */
-    private String tradeNo;
-
-    /**
-     * 充值目的 - 订单的充值用途说明
-     */
-    private String purpose;
+    private String productDetail;
 
     // ================ 商户信息 ================
     /**

@@ -11,20 +11,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "merchant_payout_config")
-public class MerchantPayoutConfig extends BaseEntity {
-
-    // ============== 基础信息 ==============
-    /**
-     * 商户ID
-     * 配置所属商户的唯一标识符
-     */
-    private String merchantId;
-
-    /**
-     * 商户名称
-     * 配置所属商户的名称
-     */
-    private String merchantName;
+public class MerchantPayoutConfig extends BaseMerchantEntity {
 
     // ============== 业务配置 ==============
     /**

@@ -137,7 +137,6 @@ public class TradeTransferOrderCmdServiceImpl  implements TradeTransferOrderCmdS
         transferFromOrder.setTradeStatus(TradeStatusEnum.TRADE_INIT.getCode());
 //        transferFromOrder.setTradeTime(LocalDateTime.now());
         transferFromOrder.setSettleStatus(SettleStatusEnum.SETTLE_TODO.getCode());
-        transferFromOrder.setIp("0.0.0.0");
         transferFromOrder.setVersion(TradeConstant.INIT_VERSION);
         transferFromOrder.setCreateTime(LocalDateTime.now());
         transferFromOrder.setAttribute(JSONUtil.toJsonStr(resultDTO));
@@ -162,7 +161,6 @@ public class TradeTransferOrderCmdServiceImpl  implements TradeTransferOrderCmdS
         transferToOrder.setTradeStatus(TradeStatusEnum.TRADE_INIT.getCode());
         transferToOrder.setTradeTime(System.currentTimeMillis());
         transferToOrder.setSettleStatus(SettleStatusEnum.SETTLE_TODO.getCode());
-        transferToOrder.setIp("0.0.0.0");
         transferToOrder.setVersion(TradeConstant.INIT_VERSION);
         transferToOrder.setCreateTime(LocalDateTime.now());
         transferToOrder.setAttribute(JSONUtil.toJsonStr(resultDTO));

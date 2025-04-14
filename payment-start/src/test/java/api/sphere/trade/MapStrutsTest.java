@@ -1,7 +1,7 @@
 package api.sphere.trade;
 
 import api.sphere.controller.request.*;
-import api.sphere.convert.TradePayConverter;
+import api.sphere.convert.TradePaymentConverter;
 import app.sphere.command.cmd.TradePaymentCmd;
 import cn.hutool.json.JSONUtil;
 import jakarta.annotation.Resource;
@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 public class MapStrutsTest {
 
     @Resource
-    TradePayConverter tradePayConverter;
+    TradePaymentConverter tradePaymentConverter;
 
     @Test
     public void sayHelloMqTest() {
@@ -65,7 +65,7 @@ public class MapStrutsTest {
 
         log.info("req={}", JSONUtil.toJsonStr(req));
 
-        TradePaymentCmd tradePaymentCmd = tradePayConverter.convertTradePayCmd(req);
+        TradePaymentCmd tradePaymentCmd = tradePaymentConverter.convertTradePaymentCmd(req);
 
         log.info("command={}", JSONUtil.toJsonStr(tradePaymentCmd));
     }

@@ -11,20 +11,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "sandbox_merchant_config")
-public class SandboxMerchantConfig extends BaseEntity {
-
-    // ============== 商户信息 ==============
-    /**
-     * 商户ID
-     * 商户的唯一标识符
-     */
-    private String merchantId;
-
-    /**
-     * 商户名称
-     * 商户的显示名称
-     */
-    private String merchantName;
+public class MerchantSandboxConfig extends BaseMerchantEntity {
 
     // ============== 回调配置 ==============
     /**

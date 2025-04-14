@@ -23,13 +23,6 @@ public class TradeJobCmdServiceImpl implements TradeJobCmdService {
 
     @Resource
     TradePaymentOrderRepository tradePaymentOrderRepository;
-    @Resource
-    TradePayoutOrderRepository tradePayoutOrderRepository;
-    @Resource
-    TradePaymentLinkOrderRepository tradePaymentLinkOrderRepository;
-
-
-
 
     /**
      * 时间可放置到凌晨执行
@@ -58,19 +51,6 @@ public class TradeJobCmdServiceImpl implements TradeJobCmdService {
                     //.set(TradePayOrder::getPaymentStatus, PaymentStatusEnum.PAYMENT_EXPIRED.getCode())
                     .in(TradePaymentOrder::getId, initIdList);
             tradePaymentOrderRepository.update(payOrderUpdate);
-
-            // 如果是PayLink
-            List<String> initPayLinkNoList = initPayOrderList.stream()
-                    .filter(e -> e.getSource().equals(TradePaymentSourceEnum.PAY_LINK.getCode()))
-                    .map(TradePaymentOrder::getOrderNo)
-                    .toList();
-            if (CollectionUtils.isNotEmpty(initPayLinkNoList)) {
-                UpdateWrapper<TradePaymentLinkOrder> linkOrderUpdate = new UpdateWrapper<>();
-                linkOrderUpdate.lambda()
-                        .set(TradePaymentLinkOrder::getLinkStatus, TradePaymentLinkStatusEnum.PAYMENT_LINK_EXPIRED.getCode())
-                        .in(TradePaymentLinkOrder::getLinkNo, initPayLinkNoList);
-                tradePaymentLinkOrderRepository.update(linkOrderUpdate);
-            }
         }
 
         // 查询需要设置超时的订单 针对下单成功，拿到Va等，但未支付

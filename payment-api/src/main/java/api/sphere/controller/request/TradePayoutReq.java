@@ -19,11 +19,16 @@ public class TradePayoutReq extends TradeReq {
     private String paymentMethod;
 
     /**
-     * 出款账号, 可能是银行卡号、可能是钱包账号、可能是其他
+     * 出款账号， 可能是银行卡号、可能是钱包账号、可能是其他
+     */
+    private String bankCode;
+
+    /**
+     * 出款账号， 可能是银行卡号、可能是钱包账号、可能是其他
      */
     @NotBlank(message = "cashAccount is required")
     @Length(max = 32, message = "cashAccount length max 32")
-    private String cashAccount;
+    private String bankAccount;
 
     /**
      * 付款方信息

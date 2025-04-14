@@ -1,7 +1,7 @@
 package api.sphere.controller.api;
 
 import api.sphere.controller.request.*;
-import api.sphere.convert.TradePayConverter;
+import api.sphere.convert.TradePaymentConverter;
 import app.sphere.command.TradePaymentOrderCmdService;
 import app.sphere.command.cmd.TradeCashierPaymentCmd;
 import app.sphere.command.cmd.TradePaymentCmd;
@@ -29,7 +29,7 @@ public class TradeApiPaymentOrderController {
     @Resource
     TradePaymentOrderCmdService tradePaymentOrderCmdService;
     @Resource
-    TradePayConverter tradePayConverter;
+    TradePaymentConverter tradePaymentConverter;
 
 
     /**
@@ -38,7 +38,7 @@ public class TradeApiPaymentOrderController {
     @PostMapping("/v1/apiPayment")
     public Mono<Result<TradePaymentDTO>> apiPayment(@RequestBody @Validated TradePaymentReq req) {
         log.info("apiPayment req={}", JSONUtil.toJsonStr(req));
-        TradePaymentCmd cmd = tradePayConverter.convertTradePayCmd(req);
+        TradePaymentCmd cmd = tradePaymentConverter.convertTradePaymentCmd(req);
         cmd.setTradePaySource(TradePaymentSourceEnum.API);
 
         TradePaymentDTO paymentDTO = tradePaymentOrderCmdService.executeApiPayment(cmd);
@@ -51,7 +51,7 @@ public class TradeApiPaymentOrderController {
     @PostMapping("/v1/cashierPayment")
     public Mono<Result<TradeCashierPaymentDTO>> cashierPayment(@RequestBody @Validated TradeCashierPaymentReq req) {
         log.info("cashierPayment req={}", JSONUtil.toJsonStr(req));
-        TradeCashierPaymentCmd cmd = tradePayConverter.convertTradeCashierPaymentCmd(req);
+        TradeCashierPaymentCmd cmd = tradePaymentConverter.convertTradeCashierPaymentCmd(req);
 
         TradeCashierPaymentDTO paymentDTO = tradePaymentOrderCmdService.executeCashierPay(cmd);
         return Mono.just(Result.ok(paymentDTO));
@@ -64,7 +64,7 @@ public class TradeApiPaymentOrderController {
     @PostMapping("/v1/getCashier")
     public Mono<Result<CashierDTO>> getCashier(@RequestBody @Validated CashierReq req) {
         log.info("getCashier req={}", JSONUtil.toJsonStr(req));
-        CashierParam param = tradePayConverter.convertCashierParam(req);
+        CashierParam param = tradePaymentConverter.convertCashierParam(req);
 
         CashierDTO dto = null;//tradePaymentOrderQueryService.getCashier(param);
         return Mono.just(Result.ok(dto));

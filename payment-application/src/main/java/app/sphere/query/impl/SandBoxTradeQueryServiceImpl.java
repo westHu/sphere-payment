@@ -29,24 +29,21 @@ import static share.sphere.TradeConstant.TRADE_EXPIRY_PERIOD_MAX;
 public class SandBoxTradeQueryServiceImpl implements SandBoxTradeQueryService {
 
     @Resource
-    SandboxTradePaymentOrderRepository sandboxTradePaymentOrderRepository;
+    TradeSandboxPaymentOrderRepository tradeSandboxPaymentOrderRepository;
     @Resource
-    SandboxTradePayoutOrderRepository sandboxTradePayoutOrderRepository;
-    @Resource
-    SandboxTradePaymentLinkOrderRepository sandboxTradePaymentLinkOrderRepository;
-
+    TradeSandboxPayoutOrderRepository tradeSandboxPayoutOrderRepository;
 
     @Override
     public PageDTO<SandboxTradePaymentOrderPageDTO> pageSandBoxPayOrderList(SandboxTradePaymentOrderPageParam param) {
         log.info("pageSandBoxPayOrderList param={}", JSONUtil.toJsonStr(param));
 
-        QueryWrapper<SandboxTradePaymentOrder> payQuery = new QueryWrapper<>();
+        QueryWrapper<TradeSandboxPaymentOrder> payQuery = new QueryWrapper<>();
         payQuery.lambda()
-                .eq(StringUtils.isNotBlank(param.getMerchantId()), SandboxTradePaymentOrder::getMerchantId, param.getMerchantId())
-                .eq(StringUtils.isNotBlank(param.getTradeNo()), SandboxTradePaymentOrder::getTradeNo, param.getTradeNo())
-                .eq(StringUtils.isNotBlank(param.getOrderNo()), SandboxTradePaymentOrder::getOrderNo, param.getOrderNo())
-                .orderByDesc(SandboxTradePaymentOrder::getTradeTime);
-        Page<SandboxTradePaymentOrder> page = sandboxTradePaymentOrderRepository.page(new Page<>(param.getPageNum(),
+                .eq(StringUtils.isNotBlank(param.getMerchantId()), TradeSandboxPaymentOrder::getMerchantId, param.getMerchantId())
+                .eq(StringUtils.isNotBlank(param.getTradeNo()), TradeSandboxPaymentOrder::getTradeNo, param.getTradeNo())
+                .eq(StringUtils.isNotBlank(param.getOrderNo()), TradeSandboxPaymentOrder::getOrderNo, param.getOrderNo())
+                .orderByDesc(TradeSandboxPaymentOrder::getTradeTime);
+        Page<TradeSandboxPaymentOrder> page = tradeSandboxPaymentOrderRepository.page(new Page<>(param.getPageNum(),
                 param.getPageSize()), payQuery);
         if (Objects.isNull(page) || page.getTotal() == 0) {
             return PageDTO.empty();
@@ -78,13 +75,13 @@ public class SandBoxTradeQueryServiceImpl implements SandBoxTradeQueryService {
     public PageDTO<SandboxTradePayoutOrderPageDTO> pageSandboxCashOrderList(SandboxTradePayoutOrderPageParam param) {
         log.info("pageSandboxCashOrderList param={}", JSONUtil.toJsonStr(param));
 
-        QueryWrapper<SandboxTradePayoutOrder> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<TradeSandboxPayoutOrder> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
-                .eq(StringUtils.isNotBlank(param.getMerchantId()), SandboxTradePayoutOrder::getMerchantId, param.getMerchantId())
-                .eq(StringUtils.isNotBlank(param.getTradeNo()), SandboxTradePayoutOrder::getTradeNo, param.getTradeNo())
-                .eq(StringUtils.isNotBlank(param.getOrderNo()), SandboxTradePayoutOrder::getOrderNo, param.getOrderNo())
-                .orderByDesc(SandboxTradePayoutOrder::getTradeTime);
-        Page<SandboxTradePayoutOrder> page = sandboxTradePayoutOrderRepository.page(new Page<>(param.getPageNum(),
+                .eq(StringUtils.isNotBlank(param.getMerchantId()), TradeSandboxPayoutOrder::getMerchantId, param.getMerchantId())
+                .eq(StringUtils.isNotBlank(param.getTradeNo()), TradeSandboxPayoutOrder::getTradeNo, param.getTradeNo())
+                .eq(StringUtils.isNotBlank(param.getOrderNo()), TradeSandboxPayoutOrder::getOrderNo, param.getOrderNo())
+                .orderByDesc(TradeSandboxPayoutOrder::getTradeTime);
+        Page<TradeSandboxPayoutOrder> page = tradeSandboxPayoutOrderRepository.page(new Page<>(param.getPageNum(),
                 param.getPageSize()), queryWrapper);
         if (Objects.isNull(page) || page.getTotal() == 0) {
             return PageDTO.empty();
@@ -131,9 +128,9 @@ public class SandBoxTradeQueryServiceImpl implements SandBoxTradeQueryService {
 //        }
 
         // 校验订单是否存在
-        QueryWrapper<SandboxTradePaymentOrder> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SandboxTradePaymentOrder::getTradeNo, tradeNo).last(TradeConstant.LIMIT_1);
-        SandboxTradePaymentOrder order = sandboxTradePaymentOrderRepository.getOne(queryWrapper);
+        QueryWrapper<TradeSandboxPaymentOrder> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(TradeSandboxPaymentOrder::getTradeNo, tradeNo).last(TradeConstant.LIMIT_1);
+        TradeSandboxPaymentOrder order = tradeSandboxPaymentOrderRepository.getOne(queryWrapper);
         Assert.notNull(order, () -> new PaymentException("Sandbox Order not exist. " + tradeNo));
 
         // 构建收银台数据
@@ -165,43 +162,21 @@ public class SandBoxTradeQueryServiceImpl implements SandBoxTradeQueryService {
         return dto;
     }
 
-
-    @Override
-    public Page<SandboxTradePaymentLinkOrder> pageSandboxPaymentLinkList(TradePaymentLinkPageParam param) {
-        log.info("pageSandboxPaymentLinkList param={}", JSONUtil.toJsonStr(param));
-        if (Objects.isNull(param)) {
-            return new Page<>();
-        }
-        String linkNo = param.getLinkNo();
-        String paymentLink = param.getPaymentLink();
-        String createStartTime = param.getCreateStartTime();
-        String createEndTime = param.getCreateEndTime();
-        QueryWrapper<SandboxTradePaymentLinkOrder> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda()
-                .eq(SandboxTradePaymentLinkOrder::getMerchantId, param.getMerchantId())
-                .eq(StringUtils.isNotBlank(linkNo), SandboxTradePaymentLinkOrder::getLinkNo, linkNo)
-                .eq(StringUtils.isNotBlank(paymentLink), SandboxTradePaymentLinkOrder::getPaymentLink, paymentLink)
-                .between(SandboxTradePaymentLinkOrder::getCreateTime, createStartTime, createEndTime)
-                .orderByDesc(SandboxTradePaymentLinkOrder::getId);
-        return sandboxTradePaymentLinkOrderRepository.page(new Page<>(param.getPageNum(), param.getPageSize()), queryWrapper);
-    }
-
-
     @Override
     public String getSandboxMerchantStep(String merchantId) {
         // 查询收款
-        QueryWrapper<SandboxTradePaymentOrder> payOrderQuery = new QueryWrapper<>();
-        payOrderQuery.lambda().eq(SandboxTradePaymentOrder::getMerchantId, merchantId)
-                .eq(SandboxTradePaymentOrder::getCallBackStatus, 1)
+        QueryWrapper<TradeSandboxPaymentOrder> payOrderQuery = new QueryWrapper<>();
+        payOrderQuery.lambda().eq(TradeSandboxPaymentOrder::getMerchantId, merchantId)
+                .eq(TradeSandboxPaymentOrder::getCallBackStatus, 1)
                 .last(LIMIT_1);
-        SandboxTradePaymentOrder payOrder = sandboxTradePaymentOrderRepository.getOne(payOrderQuery);
+        TradeSandboxPaymentOrder payOrder = tradeSandboxPaymentOrderRepository.getOne(payOrderQuery);
 
         // 查询代付
-        QueryWrapper<SandboxTradePayoutOrder> cashOrderQuery = new QueryWrapper<>();
-        cashOrderQuery.lambda().eq(SandboxTradePayoutOrder::getMerchantId, merchantId)
-                .eq(SandboxTradePayoutOrder::getCallBackStatus, 1)
+        QueryWrapper<TradeSandboxPayoutOrder> cashOrderQuery = new QueryWrapper<>();
+        cashOrderQuery.lambda().eq(TradeSandboxPayoutOrder::getMerchantId, merchantId)
+                .eq(TradeSandboxPayoutOrder::getCallBackStatus, 1)
                 .last(LIMIT_1);
-        SandboxTradePayoutOrder cashOrder = sandboxTradePayoutOrderRepository.getOne(cashOrderQuery);
+        TradeSandboxPayoutOrder cashOrder = tradeSandboxPayoutOrderRepository.getOne(cashOrderQuery);
 
         // 如果代付、代付都已经回调成功，则 验证订单通知信息
         if (Objects.nonNull(payOrder) || Objects.nonNull(cashOrder)) {
@@ -210,15 +185,15 @@ public class SandBoxTradeQueryServiceImpl implements SandBoxTradeQueryService {
 
         // 查询收款订单 排除回调状态
         payOrderQuery = new QueryWrapper<>();
-        payOrderQuery.lambda().eq(SandboxTradePaymentOrder::getMerchantId, merchantId).last(LIMIT_1);
-        payOrder = sandboxTradePaymentOrderRepository.getOne(payOrderQuery);
+        payOrderQuery.lambda().eq(TradeSandboxPaymentOrder::getMerchantId, merchantId).last(LIMIT_1);
+        payOrder = tradeSandboxPaymentOrderRepository.getOne(payOrderQuery);
 
         // 查询代付订单 排除回调状态
         cashOrderQuery = new QueryWrapper<>();
-        cashOrderQuery.lambda().eq(SandboxTradePayoutOrder::getMerchantId, merchantId)
-                .eq(SandboxTradePayoutOrder::getCallBackStatus, 1)
+        cashOrderQuery.lambda().eq(TradeSandboxPayoutOrder::getMerchantId, merchantId)
+                .eq(TradeSandboxPayoutOrder::getCallBackStatus, 1)
                 .last(LIMIT_1);
-        cashOrder = sandboxTradePayoutOrderRepository.getOne(cashOrderQuery);
+        cashOrder = tradeSandboxPayoutOrderRepository.getOne(cashOrderQuery);
         if (Objects.nonNull(payOrder) || Objects.nonNull(cashOrder)) {
             return SandboxMerchantStep.ORDER.name();
         }

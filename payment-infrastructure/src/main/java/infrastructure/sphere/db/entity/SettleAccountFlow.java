@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "account_flow")
-public class SettleAccountFlow extends BaseEntity {
+public class SettleAccountFlow extends BaseSettleEntity {
 
     // ============== 交易信息 ==============
     /**
@@ -22,26 +22,6 @@ public class SettleAccountFlow extends BaseEntity {
      * 关联的交易订单号
      */
     private String tradeNo;
-
-    // ============== 商户信息 ==============
-    /**
-     * 商户ID
-     * 商户的唯一标识符
-     */
-    private String merchantId;
-
-    /**
-     * 商户名称
-     * 商户的显示名称
-     */
-    private String merchantName;
-
-    // ============== 账户信息 ==============
-    /**
-     * 账户号
-     * 发生资金变动的账户号
-     */
-    private String accountNo;
 
     // ============== 资金信息 ==============
     /**

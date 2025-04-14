@@ -13,7 +13,7 @@ import org.mapstruct.Mapper;
 import java.util.List;
 
 @Mapper(componentModel = "Spring")
-public interface TradeCashConverter {
+public interface TradePayoutConverter {
 
     TradePayoutCommand convertTradePayoutCommand(TradePayoutReq req);
 

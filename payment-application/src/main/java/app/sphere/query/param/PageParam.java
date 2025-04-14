@@ -4,8 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class PageParam extends OperatorParam {
+public class PageParam {
 
     /**
      * 分页参数

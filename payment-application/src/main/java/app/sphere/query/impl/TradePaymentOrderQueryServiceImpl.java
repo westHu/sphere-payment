@@ -39,32 +39,7 @@ public class TradePaymentOrderQueryServiceImpl implements TradePaymentOrderQuery
     @Resource
     TradePaymentOrderRepository tradePaymentOrderRepository;
     @Resource
-    TradePaymentLinkOrderRepository tradePaymentLinkOrderRepository;
-
-    @Resource
-    ApplicationConverter applicationConverter;
-    @Resource
     TradePaymentCallBackResultRepository tradePaymentCallBackResultRepository;
-
-
-
-    @Override
-    public Page<TradePaymentLinkOrder> pagePaymentLinkList(TradePaymentLinkPageParam param) {
-        log.info("getPaymentOrderByTradeNo param={}", JSONUtil.toJsonStr(param));
-
-        if (Objects.isNull(param)) {
-            return new Page<>();
-        }
-        QueryWrapper<TradePaymentLinkOrder> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda()
-                .eq(TradePaymentLinkOrder::getMerchantId, param.getMerchantId())
-                .eq(StringUtils.isNotBlank(param.getLinkNo()), TradePaymentLinkOrder::getLinkNo, param.getLinkNo())
-                .eq(StringUtils.isNotBlank(param.getPaymentLink()), TradePaymentLinkOrder::getPaymentLink, param.getPaymentLink())
-                .between(TradePaymentLinkOrder::getCreateTime, param.getCreateStartTime(), param.getCreateEndTime())
-                .orderByDesc(TradePaymentLinkOrder::getId);
-        return tradePaymentLinkOrderRepository.page(new Page<>(param.getPageNum(), param.getPageSize()), queryWrapper);
-    }
-
 
     @Override
     public PageDTO<TradePaymentOrderPageDTO> pagePaymentOrderList(TradePaymentOrderPageParam param) {

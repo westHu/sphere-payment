@@ -13,20 +13,7 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "merchant_payment_channel_config")
-public class MerchantPaymentChannelConfig extends BaseEntity {
-
-    // ============== 基础信息 ==============
-    /**
-     * 商户ID
-     * 配置所属商户的唯一标识符
-     */
-    private String merchantId;
-
-    /**
-     * 商户名称
-     * 配置所属商户的名称
-     */
-    private String merchantName;
+public class MerchantPaymentChannelConfig extends BaseMerchantEntity {
 
     // ============== 渠道信息 ==============
     /**

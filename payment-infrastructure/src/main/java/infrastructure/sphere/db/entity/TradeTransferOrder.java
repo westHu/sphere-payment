@@ -14,20 +14,9 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "trade_transfer_order")
-public class TradeTransferOrder extends BaseEntity {
+public class TradeTransferOrder extends BaseTradeEntity {
 
-    // ================ 订单基础信息 ================
-
-    /**
-     * 转账单号 - 系统生成的唯一订单号
-     */
-    private String tradeNo;
-
-    /**
-     * 转账目的 - 订单的交易用途说明
-     */
-    private String purpose;
-
+    // ================ 转账信息 ================
     /**
      * 转账方向 - 标识是转出还是转入记录
      * -1: 转出记录
@@ -120,10 +109,6 @@ public class TradeTransferOrder extends BaseEntity {
     private Long settleFinishTime;
 
     // ================ 其他信息 ================
-    /**
-     * IP地址 - 操作来源的IP地址
-     */
-    private String ip;
 
     /**
      * 来源 - 订单的来源标识

@@ -2,7 +2,7 @@ package api.sphere.controller.api;
 
 import api.sphere.controller.request.TradePayoutReq;
 import api.sphere.controller.response.TradePayoutVO;
-import api.sphere.convert.TradeCashConverter;
+import api.sphere.convert.TradePayoutConverter;
 import app.sphere.command.TradePayoutOrderCmdService;
 import app.sphere.command.cmd.TradePayoutCommand;
 import app.sphere.command.dto.TradePayoutDTO;
@@ -32,7 +32,7 @@ public class TradeApiPayoutOrderController {
     @Resource
     TradePayoutOrderCmdService tradePayoutOrderCmdService;
     @Resource
-    TradeCashConverter tradePayoutConverter;
+    TradePayoutConverter tradePayoutConverter;
 
     /**
      * 代付

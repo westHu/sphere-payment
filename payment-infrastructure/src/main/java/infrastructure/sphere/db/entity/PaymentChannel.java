@@ -12,20 +12,9 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "payment_channel")
-public class PaymentChannel extends BaseEntity {
+public class PaymentChannel extends BasePaymentEntity {
 
     // ============== 基础信息 ==============
-    /**
-     * 渠道编码
-     * 渠道的唯一标识符，如：ALIPAY、WECHAT等
-     */
-    private String channelCode;
-
-    /**
-     * 渠道名称
-     * 渠道的显示名称，如：支付宝、微信支付等
-     */
-    private String channelName;
 
     /**
      * 渠道类型

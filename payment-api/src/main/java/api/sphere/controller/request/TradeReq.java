@@ -11,6 +11,11 @@ import org.hibernate.validator.constraints.Length;
 public class TradeReq {
 
     /**
+     * 地区
+     */
+    private String region;
+
+    /**
      * 商户平台订单号
      */
     @NotBlank(message = "orderNo is required")

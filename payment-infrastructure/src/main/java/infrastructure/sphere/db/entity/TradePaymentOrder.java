@@ -13,26 +13,9 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "trade_payment_order")
-public class TradePaymentOrder extends BaseEntity {
+public class TradePaymentOrder extends BaseTradeEntity {
 
-    // ============== 订单信息 ==============
-    /**
-     * 收款单号
-     * 系统生成的唯一订单号
-     */
-    private String tradeNo;
-
-    /**
-     * 商户传入的订单号
-     */
-    private String orderNo;
-
-    /**
-     * 交易目的
-     * 订单的交易用途说明
-     */
-    private String purpose;
-
+    // ============== 商品信息 ==============
     /**
      * 商品详情
      * 订单相关的商品或服务信息，JSON格式
@@ -166,11 +149,6 @@ public class TradePaymentOrder extends BaseEntity {
      * 交易的具体结果描述
      */
     private String tradeResult;
-
-    /**
-     * 渠道订单号
-     */
-    private String channelOrderNo;
 
     /**
      * 支付状态

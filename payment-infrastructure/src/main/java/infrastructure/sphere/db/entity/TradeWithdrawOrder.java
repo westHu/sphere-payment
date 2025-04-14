@@ -13,20 +13,7 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "trade_withdraw_order")
-public class TradeWithdrawOrder extends BaseEntity {
-
-    // ============== 订单信息 ==============
-    /**
-     * 提现单号
-     * 系统生成的唯一订单号
-     */
-    private String tradeNo;
-
-    /**
-     * 交易目的
-     * 订单的交易用途说明
-     */
-    private String purpose;
+public class TradeWithdrawOrder extends BaseTradeEntity {
 
     // ============== 商户信息 ==============
     /**
@@ -191,11 +178,6 @@ public class TradeWithdrawOrder extends BaseEntity {
      * 交易的具体结果描述
      */
     private String tradeResult;
-
-    /**
-     * 渠道订单号
-     */
-    private String channelOrderNo;
 
     /**
      * 支付状态

@@ -16,7 +16,6 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import domain.sphere.repository.TradePaymentLinkOrderRepository;
 import domain.sphere.repository.TradePaymentOrderRepository;
 import infrastructure.sphere.db.entity.*;
 import infrastructure.sphere.remote.channel.*;
@@ -44,10 +43,6 @@ public class TradePaymentOrderCmdServiceImpl implements TradePaymentOrderCmdServ
 
     @Resource
     TradePaymentOrderRepository tradePaymentOrderRepository;
-
-
-    @Resource
-    TradePaymentLinkOrderRepository tradePaymentLinkOrderRepository;
 
     @Resource
     ChannelRouterManager channelRouterManager;
@@ -111,11 +106,7 @@ public class TradePaymentOrderCmdServiceImpl implements TradePaymentOrderCmdServ
     private String doPaymentLink(TradePaymentCmd command) {
         // 构建 payCommand
         TradePaymentDTO dto = doApiPay(command);
-        String paymentLink = cashierPath + "?tradeNo=" + dto.getTradeNo();
-
-        // 保存交易链接
-        saveTradePaymentLinkOrder(command, paymentLink);
-        return paymentLink;
+        return cashierPath + "?tradeNo=" + dto.getTradeNo();
     }
 
     /**
@@ -382,16 +373,6 @@ public class TradePaymentOrderCmdServiceImpl implements TradePaymentOrderCmdServ
                     .eq(TradePaymentOrder::getId, order.getId());
             tradePaymentOrderRepository.update(updateWrapper);
 
-            // 订单来源
-            TradePaymentSourceEnum tradePaymentSourceEnum = TradePaymentSourceEnum.codeToEnum(order.getSource());
-            log.info("doCashierPay tradePaySourceEnum={}", tradePaymentSourceEnum.name());
-            if (TradePaymentSourceEnum.PAY_LINK.equals(tradePaymentSourceEnum)) {
-                Integer paymentLinkStatus = TradePaymentLinkStatusEnum.PAYMENT_LINK_EXPIRED.getCode();
-                UpdateWrapper<TradePaymentLinkOrder> linkUpdate = new UpdateWrapper<>();
-                linkUpdate.lambda().set(TradePaymentLinkOrder::getLinkStatus, paymentLinkStatus)
-                        .eq(TradePaymentLinkOrder::getLinkNo, order.getOrderNo());
-                tradePaymentLinkOrderRepository.update(linkUpdate);
-            }
             throw new PaymentException(ExceptionCode.TRADE_ORDER_HAS_EXPIRED, order.getTradeNo());
         }
     }
@@ -624,20 +605,6 @@ public class TradePaymentOrderCmdServiceImpl implements TradePaymentOrderCmdServ
                 .setSql(TradeConstant.VERSION_SQL)
                 .eq(TradePaymentOrder::getId, order.getId());
         tradePaymentOrderRepository.update(payOrderUpdate);
-
-        // 如果是PaymentLink 则更新
-        boolean isPaymentLink = Optional.ofNullable(order.getSource())
-                .map(TradePaymentSourceEnum::codeToEnum)
-                .map(TradePaymentSourceEnum.PAY_LINK::equals)
-                .orElse(false);
-        if (isPaymentLink) {
-            UpdateWrapper<TradePaymentLinkOrder> linkOrderUpdate = new UpdateWrapper<>();
-            linkOrderUpdate.lambda()
-                    .set(TradePaymentLinkOrder::getPaymentMethod, order.getPaymentMethod())
-                    .set(TradePaymentLinkOrder::getLinkStatus, TradePaymentLinkStatusEnum.PAYMENT_LINK_FAILED.getCode())
-                    .eq(TradePaymentLinkOrder::getLinkNo, order.getOrderNo());
-            tradePaymentLinkOrderRepository.update(linkOrderUpdate);
-        }
     }
 
     /**
@@ -673,19 +640,6 @@ public class TradePaymentOrderCmdServiceImpl implements TradePaymentOrderCmdServ
                 .setSql(TradeConstant.VERSION_SQL)
                 .eq(TradePaymentOrder::getId, order.getId());
         tradePaymentOrderRepository.update(payOrderUpdate);
-
-        // 如果是PaymentLink 则更新
-        boolean isPaymentLink = Optional.ofNullable(order.getSource())
-                .map(e -> e.equals(TradePaymentSourceEnum.PAY_LINK.getCode()))
-                .orElse(false);
-        if (isPaymentLink) {
-            UpdateWrapper<TradePaymentLinkOrder> linkOrderUpdate = new UpdateWrapper<>();
-            linkOrderUpdate.lambda()
-                    .set(TradePaymentLinkOrder::getPaymentMethod, order.getPaymentMethod()) // 要么已存在, 要么已设置
-                    .set(TradePaymentLinkOrder::getLinkStatus, TradePaymentLinkStatusEnum.PAYMENT_LINK_PROCESSING.getCode())
-                    .eq(TradePaymentLinkOrder::getLinkNo, order.getOrderNo());
-            tradePaymentLinkOrderRepository.update(linkOrderUpdate);
-        }
     }
 
     /**
@@ -800,17 +754,6 @@ public class TradePaymentOrderCmdServiceImpl implements TradePaymentOrderCmdServ
                     .set(TradePaymentOrder::getAttribute, JSONUtil.toJsonStr(attributeDTO))
                     .eq(TradePaymentOrder::getId, order.getId());
             tradePaymentOrderRepository.update(payOrderUpdate);
-
-            // 如果link
-            TradePaymentSourceEnum sourceEnum = TradePaymentSourceEnum.codeToEnum(order.getSource());
-            if (TradePaymentSourceEnum.PAY_LINK.equals(sourceEnum)) {
-                UpdateWrapper<TradePaymentLinkOrder> linkOrderUpdate = new UpdateWrapper<>();
-                linkOrderUpdate.lambda()
-                        .set(TradePaymentLinkOrder::getLinkStatus,
-                                TradePaymentLinkStatusEnum.PAYMENT_LINK_SUCCESS.getCode())
-                        .eq(TradePaymentLinkOrder::getLinkNo, order.getOrderNo());
-                tradePaymentLinkOrderRepository.update(linkOrderUpdate);
-            }
         }
 
         return true;
@@ -860,17 +803,6 @@ public class TradePaymentOrderCmdServiceImpl implements TradePaymentOrderCmdServ
                     .set(TradePaymentOrder::getAttribute, JSONUtil.toJsonStr(attributeDTO))
                     .eq(TradePaymentOrder::getId, order.getId());
             tradePaymentOrderRepository.update(payOrderUpdate);
-
-            // 如果link
-            TradePaymentSourceEnum sourceEnum = TradePaymentSourceEnum.codeToEnum(order.getSource());
-            if (TradePaymentSourceEnum.PAY_LINK.equals(sourceEnum)) {
-                UpdateWrapper<TradePaymentLinkOrder> linkOrderUpdate = new UpdateWrapper<>();
-                linkOrderUpdate.lambda()
-                        .set(TradePaymentLinkOrder::getLinkStatus,
-                                TradePaymentLinkStatusEnum.PAYMENT_LINK_FAILED.getCode())
-                        .eq(TradePaymentLinkOrder::getLinkNo, order.getOrderNo());
-                tradePaymentLinkOrderRepository.update(linkOrderUpdate);
-            }
         }
 
         // 如果是支付失败状态，不必进行退单
@@ -905,43 +837,8 @@ public class TradePaymentOrderCmdServiceImpl implements TradePaymentOrderCmdServ
                     .set(TradePaymentOrder::getAttribute, JSONUtil.toJsonStr(attributeDTO))
                     .eq(TradePaymentOrder::getId, order.getId());
             tradePaymentOrderRepository.update(payOrderUpdate);
-
-            // 如果link
-            TradePaymentSourceEnum sourceEnum = TradePaymentSourceEnum.codeToEnum(order.getSource());
-            if (TradePaymentSourceEnum.PAY_LINK.equals(sourceEnum)) {
-                UpdateWrapper<TradePaymentLinkOrder> linkOrderUpdate = new UpdateWrapper<>();
-                linkOrderUpdate.lambda()
-                        .set(TradePaymentLinkOrder::getLinkStatus,
-                                TradePaymentLinkStatusEnum.PAYMENT_LINK_FAILED.getCode())
-                        .eq(TradePaymentLinkOrder::getLinkNo, order.getOrderNo());
-                tradePaymentLinkOrderRepository.update(linkOrderUpdate);
-            }
         }
         return true;
-    }
-
-    /**
-     * 保存支付链接
-     */
-    private void saveTradePaymentLinkOrder(TradePaymentCmd command,
-                                           String paymentLink) {
-        TradePaymentLinkStatusEnum paymentLinkStatusEnum = StringUtils.isBlank(command.getPaymentMethod()) ?
-                TradePaymentLinkStatusEnum.PAYMENT_LINK_INIT :
-                TradePaymentLinkStatusEnum.PAYMENT_LINK_PROCESSING;
-        TradePaymentLinkOrder paymentLinkOrder = new TradePaymentLinkOrder();
-        paymentLinkOrder.setLinkNo(command.getOrderNo());
-        paymentLinkOrder.setMerchantId(command.getMerchant().getMerchantId());
-        paymentLinkOrder.setMerchantName(command.getMerchant().getMerchantName());
-        paymentLinkOrder.setPaymentMethod(command.getPaymentMethod());
-        paymentLinkOrder.setCurrency(command.getMoney().getCurrency());
-        paymentLinkOrder.setAmount(command.getMoney().getAmount());
-        paymentLinkOrder.setLinkStatus(paymentLinkStatusEnum.getCode());
-        paymentLinkOrder.setNotes(command.getProductDetail());
-        paymentLinkOrder.setPaymentLink(paymentLink);
-        paymentLinkOrder.setRegion(command.getRegion());
-
-        boolean save = tradePaymentLinkOrderRepository.save(paymentLinkOrder);
-        log.info("saveTradePaymentLinkOrder result={}", save);
     }
 
     /**

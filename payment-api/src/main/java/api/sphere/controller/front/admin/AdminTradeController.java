@@ -75,7 +75,7 @@ public class AdminTradeController {
     @Resource
     TradePaymentOrderQueryService tradePaymentOrderQueryService;
     @Resource
-    TradePayConverter tradePayConverter;
+    TradePaymentConverter tradePaymentConverter;
 
     // 代付相关服务
     @Resource
@@ -83,7 +83,7 @@ public class AdminTradeController {
     @Resource
     TradePayoutOrderCmdService tradePayoutOrderCmdService;
     @Resource
-    TradeCashConverter tradePayoutConverter;
+    TradePayoutConverter tradePayoutConverter;
 
     // 充值相关服务
     @Resource
@@ -147,7 +147,7 @@ public class AdminTradeController {
     @PostMapping("/v1/createPaymentLink")
     public Mono<Result<String>> createPaymentLink(@RequestBody @Validated TradePaymentReq req) {
         log.info("创建PaymentLink收款, req={}", JSONUtil.toJsonStr(req));
-        TradePaymentCmd cmd = tradePayConverter.convertTradePayCmd(req);
+        TradePaymentCmd cmd = tradePaymentConverter.convertTradePaymentCmd(req);
         cmd.setTradePaySource(TradePaymentSourceEnum.PAY_LINK);
         return Mono.just(Result.ok(tradePaymentOrderCmdService.executePaymentLink(cmd)));
     }
@@ -161,7 +161,7 @@ public class AdminTradeController {
     @PostMapping("/v1/paymentSupplement")
     public Mono<Result<Boolean>> paymentSupplement(@RequestBody @Validated TradePaymentSupplementReq req) {
         log.info("收款补单, req={}", JSONUtil.toJsonStr(req));
-        TradePaymentSupplementCmd cmd = tradePayConverter.convertTradePaymentSupplementCmd(req);
+        TradePaymentSupplementCmd cmd = tradePaymentConverter.convertTradePaymentSupplementCmd(req);
         return Mono.just(Result.ok(tradePaymentOrderCmdService.executePaymentSupplement(cmd)));
     }
 
@@ -174,7 +174,7 @@ public class AdminTradeController {
     @PostMapping("/v1/paymentRefund")
     public Mono<Result<Boolean>> paymentRefund(@RequestBody @Validated TradePaymentRefundReq req) {
         log.info("收款退单, req={}", JSONUtil.toJsonStr(req));
-        TradePaymentRefundCmd cmd = tradePayConverter.convertTradePaymentRefundCmd(req);
+        TradePaymentRefundCmd cmd = tradePaymentConverter.convertTradePaymentRefundCmd(req);
         return Mono.just(Result.ok(tradePaymentOrderCmdService.executePaymentRefund(cmd)));
     }
 
@@ -187,10 +187,7 @@ public class AdminTradeController {
     @PostMapping("/v1/pagePaymentLinkList")
     public Mono<PageResult<TradePaymentLinkOrderVO>> pagePaymentLinkList(@RequestBody @Validated TradePaymentLinkPageReq req) {
         log.info("分页查询PaymentLink收款, req={}", JSONUtil.toJsonStr(req));
-        TradePaymentLinkPageParam param = tradePayConverter.convertTradePaymentLinkPageParam(req);
-        Page<TradePaymentLinkOrder> page = null;//tradePayOrderQueryService.pagePaymentLinkList(param);
-        List<TradePaymentLinkOrderVO> voList = tradePayConverter.convertTradePaymentLinkOrderVOList(page.getRecords());
-        return Mono.just(PageResult.ok(page.getTotal(), page.getCurrent(), voList));
+        return null;
     }
 
     /**
@@ -202,7 +199,7 @@ public class AdminTradeController {
     @PostMapping("/v1/pagePaymentOrderList")
     public Mono<PageResult<TradePaymentOrderPageDTO>> pagePayOrderList(@RequestBody @Validated TradePayOrderPageReq req) {
         log.info("分页查询收款订单列表, req={}", JSONUtil.toJsonStr(req));
-        TradePaymentOrderPageParam param = tradePayConverter.convertPageParam(req);
+        TradePaymentOrderPageParam param = tradePaymentConverter.convertTradePaymentOrderPageParam(req);
         PageDTO<TradePaymentOrderPageDTO> pageDTO = null;//tradePayOrderQueryService.pagePaymentOrderList(param);
         return Mono.just(PageResult.ok(pageDTO.getTotal(), pageDTO.getCurrent(), pageDTO.getData()));
     }
@@ -216,7 +213,7 @@ public class AdminTradeController {
     @PostMapping("/v1/exportPaymentOrderList")
     public Mono<Result<String>> exportPayOrderList(@RequestBody @Validated TradePayOrderPageReq req) {
         log.info("导出收款订单列表, req={}", JSONUtil.toJsonStr(req));
-        TradePaymentOrderPageParam param = tradePayConverter.convertPageParam(req);
+        TradePaymentOrderPageParam param = tradePaymentConverter.convertTradePaymentOrderPageParam(req);
         String exportPayOrder = null;//tradePayOrderQueryService.exportPaymentOrderList(param);
         return Mono.just(Result.ok(exportPayOrder));
     }

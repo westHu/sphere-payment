@@ -13,29 +13,11 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "sandbox_trade_payment_order")
-public class SandboxTradePaymentOrder extends BaseEntity {
+public class TradeSandboxPaymentOrder extends BaseTradeEntity {
 
-    // ================ 订单基础信息 ================
+    // ============== 商品信息 ==============
     /**
-     * 收款单号
-     * 系统生成的唯一订单号，用于内部追踪
-     */
-    private String tradeNo;
-
-    /**
-     * 外部订单号
-     * 商户传入的订单号，用于商户系统关联
-     */
-    private String orderNo;
-
-    /**
-     * 交易目的
-     * 订单的交易用途说明，如：商品购买、服务费用等
-     */
-    private String purpose;
-
-    /**
-     * 商户详情
+     * 商品详情
      * 订单相关的商品或服务信息，JSON格式
      */
     private String productDetail;

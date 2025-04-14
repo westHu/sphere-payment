@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = "settle_order")
-public class SettleOrder extends BaseEntity {
+public class SettleOrder extends BaseSettleEntity {
 
     // ============== 订单信息 ==============
     /**
@@ -42,25 +42,6 @@ public class SettleOrder extends BaseEntity {
      * 支付完成的时间戳
      */
     private Long paymentFinishTime;
-
-    // ============== 商户信息 ==============
-    /**
-     * 商户ID
-     * 商户的唯一标识符
-     */
-    private String merchantId;
-
-    /**
-     * 商户名称
-     * 商户的显示名称
-     */
-    private String merchantName;
-
-    /**
-     * 商户账户号
-     * 商户的账户号
-     */
-    private String accountNo;
 
     // ============== 渠道信息 ==============
     /**

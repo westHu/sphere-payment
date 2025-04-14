@@ -17,20 +17,7 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("payment_channel_balance_log")
-public class PaymentChannelBalanceLog extends BaseEntity {
-
-    // ============== 基础信息 ==============
-    /**
-     * 渠道编码
-     * 关联的支付渠道编码
-     */
-    private String channelCode;
-
-    /**
-     * 渠道名称
-     * 关联的支付渠道名称
-     */
-    private String channelName;
+public class PaymentChannelBalanceLog extends BasePaymentEntity {
 
     // ============== 余额信息 ==============
     /**
