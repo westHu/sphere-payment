@@ -1,8 +1,6 @@
 package app.sphere.query.impl;
 
-import app.sphere.command.dto.trade.result.MerchantResultDTO;
-import app.sphere.command.dto.trade.result.PaymentResultDTO;
-import app.sphere.command.dto.trade.result.TradeResultDTO;
+import app.sphere.command.dto.trade.result.*;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 

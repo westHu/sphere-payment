@@ -7,9 +7,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.security.*;
 
 /**
  * Google Authenticator配置类

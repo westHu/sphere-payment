@@ -5,9 +5,7 @@ import share.sphere.exception.PaymentException;
 
 import java.time.LocalDateTime;
 
-import static share.sphere.TradeConstant.FILE_SUFFIX_CSV;
-import static share.sphere.TradeConstant.PATH_EXPORT;
-import static share.sphere.TradeConstant.PATH_SETTLEMENT;
+import static share.sphere.TradeConstant.*;
 
 public class StorageUtil {
 

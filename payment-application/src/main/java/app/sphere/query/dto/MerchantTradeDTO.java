@@ -1,13 +1,6 @@
 package app.sphere.query.dto;
 
-import infrastructure.sphere.db.entity.Merchant;
-import infrastructure.sphere.db.entity.MerchantConfig;
-import infrastructure.sphere.db.entity.MerchantPaymentChannelConfig;
-import infrastructure.sphere.db.entity.MerchantPaymentConfig;
-import infrastructure.sphere.db.entity.MerchantPayoutChannelConfig;
-import infrastructure.sphere.db.entity.MerchantPayoutConfig;
-import infrastructure.sphere.db.entity.MerchantWithdrawChannelConfig;
-import infrastructure.sphere.db.entity.MerchantWithdrawConfig;
+import infrastructure.sphere.db.entity.*;
 import lombok.Data;
 
 @Data

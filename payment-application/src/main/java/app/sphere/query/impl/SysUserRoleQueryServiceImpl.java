@@ -1,21 +1,12 @@
 package app.sphere.query.impl;
 
 import app.sphere.query.SysUserRoleQueryService;
-import app.sphere.query.dto.PageDTO;
-import app.sphere.query.dto.SysPermissionDTO;
-import app.sphere.query.dto.SysRoleDTO;
-import app.sphere.query.dto.SysUserDTO;
-import app.sphere.query.param.SysPermissionParam;
-import app.sphere.query.param.SysRolePageParam;
-import app.sphere.query.param.SysUserPageParam;
+import app.sphere.query.dto.*;
+import app.sphere.query.param.*;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import domain.sphere.repository.SysPermissionRepository;
-import domain.sphere.repository.SysRoleRepository;
-import domain.sphere.repository.SysUserRepository;
-import infrastructure.sphere.db.entity.SysPermission;
-import infrastructure.sphere.db.entity.SysRole;
-import infrastructure.sphere.db.entity.SysUser;
+import domain.sphere.repository.*;
+import infrastructure.sphere.db.entity.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;

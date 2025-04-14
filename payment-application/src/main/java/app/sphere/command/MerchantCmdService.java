@@ -1,9 +1,7 @@
 package app.sphere.command;
 
 
-import app.sphere.command.cmd.MerchantAddCommand;
-import app.sphere.command.cmd.MerchantUpdateCommand;
-import app.sphere.command.cmd.MerchantVerifyCommand;
+import app.sphere.command.cmd.*;
 
 public interface MerchantCmdService {
 

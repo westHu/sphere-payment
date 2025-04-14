@@ -1,9 +1,7 @@
 package api.sphere.convert;
 
 
-import api.sphere.controller.request.MerchantConfigUpdateReq;
-import api.sphere.controller.request.MerchantIdReq;
-import api.sphere.controller.request.PaymentLinkSettingReq;
+import api.sphere.controller.request.*;
 import app.sphere.command.cmd.MerchantConfigUpdateCmd;
 import app.sphere.command.cmd.PaymentLinkSettingCmd;
 import app.sphere.query.param.MerchantIdParam;

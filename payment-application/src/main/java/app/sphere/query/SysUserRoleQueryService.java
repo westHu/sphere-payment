@@ -1,12 +1,7 @@
 package app.sphere.query;
 
-import app.sphere.query.dto.PageDTO;
-import app.sphere.query.dto.SysPermissionDTO;
-import app.sphere.query.dto.SysRoleDTO;
-import app.sphere.query.dto.SysUserDTO;
-import app.sphere.query.param.SysPermissionParam;
-import app.sphere.query.param.SysRolePageParam;
-import app.sphere.query.param.SysUserPageParam;
+import app.sphere.query.dto.*;
+import app.sphere.query.param.*;
 
 import java.util.List;
 

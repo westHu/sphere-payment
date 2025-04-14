@@ -1,9 +1,6 @@
 package api.sphere.convert;
 
-import api.sphere.controller.request.MerchantOperatorAddReq;
-import api.sphere.controller.request.MerchantOperatorListReq;
-import api.sphere.controller.request.MerchantOperatorPageReq;
-import api.sphere.controller.request.MerchantOperatorUpdateReq;
+import api.sphere.controller.request.*;
 import api.sphere.controller.response.MerchantOperatorVO;
 import app.sphere.command.cmd.MerchantOperatorAddCmd;
 import app.sphere.command.cmd.MerchantOperatorUpdateCmd;

@@ -1,8 +1,6 @@
 package app.sphere.command;
 
-import app.sphere.command.cmd.SettleAccountFlowOrderRevisionJobCommand;
-import app.sphere.command.cmd.SettleAccountFlowRevisionJobCommand;
-import app.sphere.command.cmd.SettleAccountSnapshotJobCommand;
+import app.sphere.command.cmd.*;
 
 public interface SettleAccountJobCmdService {
 

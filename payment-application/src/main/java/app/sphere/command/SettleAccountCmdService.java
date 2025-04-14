@@ -1,14 +1,6 @@
 package app.sphere.command;
 
-import app.sphere.command.cmd.SettleAccountAddCmd;
-import app.sphere.command.cmd.SettleAccountRechargeCommand;
-import app.sphere.command.cmd.SettleAccountUpdateCashCommand;
-import app.sphere.command.cmd.SettleAccountUpdateFrozenCmd;
-import app.sphere.command.cmd.SettleAccountUpdateRefundCommand;
-import app.sphere.command.cmd.SettleAccountUpdateSettleCommand;
-import app.sphere.command.cmd.SettleAccountUpdateTransferCommand;
-import app.sphere.command.cmd.SettleAccountUpdateUnFrozenCmd;
-import app.sphere.command.cmd.SettleAccountWithdrawCommand;
+import app.sphere.command.cmd.*;
 
 public interface SettleAccountCmdService {
 

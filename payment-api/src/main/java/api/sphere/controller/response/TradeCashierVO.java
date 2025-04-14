@@ -1,8 +1,6 @@
 package api.sphere.controller.response;
 
-import app.sphere.query.dto.CashierPaymentMethodDTO;
-import app.sphere.query.dto.CashierPaymentTypeDTO;
-import app.sphere.query.dto.TradeCashierStyleDTO;
+import app.sphere.query.dto.*;
 import lombok.Data;
 
 import java.math.BigDecimal;

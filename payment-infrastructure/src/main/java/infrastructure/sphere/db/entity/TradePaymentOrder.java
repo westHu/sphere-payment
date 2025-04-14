@@ -171,6 +171,7 @@ public class TradePaymentOrder extends BaseEntity {
      * 渠道订单号
      */
     private String channelOrderNo;
+
     /**
      * 支付状态
      * 0: 未支付

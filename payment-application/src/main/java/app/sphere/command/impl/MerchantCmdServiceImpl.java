@@ -1,9 +1,7 @@
 package app.sphere.command.impl;
 
 import app.sphere.command.MerchantCmdService;
-import app.sphere.command.cmd.MerchantAddCommand;
-import app.sphere.command.cmd.MerchantUpdateCommand;
-import app.sphere.command.cmd.MerchantVerifyCommand;
+import app.sphere.command.cmd.*;
 import app.sphere.command.dto.MerchantAttributeDTO;
 import app.sphere.manager.OrderNoManager;
 import cn.hutool.core.lang.Assert;

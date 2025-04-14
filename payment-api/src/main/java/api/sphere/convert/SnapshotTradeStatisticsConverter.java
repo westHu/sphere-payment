@@ -1,16 +1,8 @@
 package api.sphere.convert;
 
 
-import api.sphere.controller.request.TradeMerchantStatisticsSnapshotReq;
-import api.sphere.controller.request.TradeStatisticsChannelReq;
-import api.sphere.controller.request.TradeStatisticsMerchantReq;
-import api.sphere.controller.request.TradeStatisticsPlatformReq;
-import api.sphere.controller.request.TradeTimelyStatisticsIndexReq;
-import app.sphere.query.param.TradeMerchantStatisticsSnapshotParam;
-import app.sphere.query.param.TradeStatisticsChannelParam;
-import app.sphere.query.param.TradeStatisticsMerchantParam;
-import app.sphere.query.param.TradeStatisticsPlatformParam;
-import app.sphere.query.param.TradeTimelyStatisticsIndexParam;
+import api.sphere.controller.request.*;
+import app.sphere.query.param.*;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "Spring")

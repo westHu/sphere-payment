@@ -19,10 +19,6 @@ public class ExtConfig extends BaseEntity {
      */
     private String name;
 
-    /**
-     * 键
-     */
-    private String module;
 
     /**
      * 值

@@ -1,8 +1,6 @@
 package app.sphere.manager.dto;
 
-import infrastructure.sphere.db.entity.PaymentChannel;
-import infrastructure.sphere.db.entity.PaymentChannelMethod;
-import infrastructure.sphere.db.entity.PaymentMethod;
+import infrastructure.sphere.db.entity.*;
 import lombok.Data;
 
 @Data

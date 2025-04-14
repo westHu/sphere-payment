@@ -1,10 +1,6 @@
 package api.sphere.trade;
 
-import api.sphere.controller.request.MerchantReq;
-import api.sphere.controller.request.MoneyReq;
-import api.sphere.controller.request.PayerReq;
-import api.sphere.controller.request.ReceiverReq;
-import api.sphere.controller.request.TradePaymentReq;
+import api.sphere.controller.request.*;
 import api.sphere.convert.TradePayConverter;
 import app.sphere.command.cmd.TradePaymentCmd;
 import cn.hutool.json.JSONUtil;

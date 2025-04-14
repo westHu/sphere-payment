@@ -1,18 +1,9 @@
 package api.sphere.convert;
 
-import api.sphere.controller.request.MerchantAddReq;
-import api.sphere.controller.request.MerchantDropListReq;
-import api.sphere.controller.request.MerchantIdReq;
-import api.sphere.controller.request.MerchantPageReq;
-import api.sphere.controller.request.MerchantUpdateReq;
-import api.sphere.controller.request.MerchantVerifyReq;
+import api.sphere.controller.request.*;
 import api.sphere.controller.response.MerchantBaseVO;
-import app.sphere.command.cmd.MerchantAddCommand;
-import app.sphere.command.cmd.MerchantUpdateCommand;
-import app.sphere.command.cmd.MerchantVerifyCommand;
-import app.sphere.query.param.MerchantDropListParam;
-import app.sphere.query.param.MerchantIdParam;
-import app.sphere.query.param.MerchantPageParam;
+import app.sphere.command.cmd.*;
+import app.sphere.query.param.*;
 import infrastructure.sphere.db.entity.Merchant;
 import org.mapstruct.Mapper;
 

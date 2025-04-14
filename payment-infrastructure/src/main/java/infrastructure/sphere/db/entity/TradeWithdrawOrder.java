@@ -193,6 +193,11 @@ public class TradeWithdrawOrder extends BaseEntity {
     private String tradeResult;
 
     /**
+     * 渠道订单号
+     */
+    private String channelOrderNo;
+
+    /**
      * 支付状态
      * 0: 未支付
      * 1: 支付中

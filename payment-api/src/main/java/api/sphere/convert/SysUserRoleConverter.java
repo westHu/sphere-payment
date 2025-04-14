@@ -1,24 +1,8 @@
 package api.sphere.convert;
 
-import api.sphere.controller.request.SysLoginReq;
-import api.sphere.controller.request.SysPermissionReq;
-import api.sphere.controller.request.SysRoleAddReq;
-import api.sphere.controller.request.SysRoleAssignPermissionReq;
-import api.sphere.controller.request.SysRolePageReq;
-import api.sphere.controller.request.SysRoleUpdateReq;
-import api.sphere.controller.request.SysUserAddReq;
-import api.sphere.controller.request.SysUserPageReq;
-import api.sphere.controller.request.SysUserUpdateReq;
-import app.sphere.command.cmd.SysLoginCommand;
-import app.sphere.command.cmd.SysRoleAddCommand;
-import app.sphere.command.cmd.SysRoleAssignPermissionCommand;
-import app.sphere.command.cmd.SysRoleUpdateCommand;
-import app.sphere.command.cmd.SysUserAddCommand;
-import app.sphere.command.cmd.SysUserAssignRoleCommand;
-import app.sphere.command.cmd.SysUserUpdateCommand;
-import app.sphere.query.param.SysPermissionParam;
-import app.sphere.query.param.SysRolePageParam;
-import app.sphere.query.param.SysUserPageParam;
+import api.sphere.controller.request.*;
+import app.sphere.command.cmd.*;
+import app.sphere.query.param.*;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "Spring")

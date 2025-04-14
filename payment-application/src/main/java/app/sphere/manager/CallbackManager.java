@@ -1,9 +1,7 @@
 package app.sphere.manager;
 
 import app.sphere.command.dto.trade.callback.TradeCallBackDTO;
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
-import cn.hutool.http.HttpUtil;
+import cn.hutool.http.*;
 import cn.hutool.json.JSONUtil;
 import infrastructure.sphere.config.platform.PlatformKeyConfiguration;
 import infrastructure.sphere.config.platform.SandboxPlatformKeyConfiguration;
@@ -18,12 +16,7 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
-import static share.sphere.TradeConstant.DF_3;
-import static share.sphere.TradeConstant.SANDBOX;
-import static share.sphere.TradeConstant.UTF8;
-import static share.sphere.TradeConstant.X_SIGNATURE;
-import static share.sphere.TradeConstant.X_TIMESTAMP;
-import static share.sphere.TradeConstant.ZONE_ID;
+import static share.sphere.TradeConstant.*;
 
 
 /**
