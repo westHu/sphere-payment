@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>paysphere-payment</artifactId>
-        <groupId>com.paysphere</groupId>
+        <artifactId>sphere-payment</artifactId>
+        <groupId>com.sphere</groupId>
         <version>1.0.0</version>
     </parent>
 
@@ -20,9 +20,21 @@
         </dependency>
 
         <dependency>
-            <groupId>com.paysphere</groupId>
+            <groupId>com.sphere</groupId>
             <artifactId>payment-domain</artifactId>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>16</source>
+                    <target>16</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
