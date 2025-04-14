@@ -2,7 +2,9 @@ package api.sphere.controller.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class TradeStatisticsChannelReq extends PageReq {
 

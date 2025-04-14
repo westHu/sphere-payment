@@ -1,9 +1,9 @@
 package app.sphere.command.cmd;
 
-import share.sphere.enums.MerchantTypeEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import share.sphere.enums.MerchantTypeEnum;
 
 @Data
 public class MerchantExamineCommand {

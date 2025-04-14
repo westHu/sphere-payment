@@ -2,8 +2,6 @@ package app.sphere.query.dto;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 /**
  * 商户代付支付配置
  */

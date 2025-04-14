@@ -1,9 +1,9 @@
 package domain.sphere.repository.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import domain.sphere.repository.TradePaymentCallBackResultRepository;
 import infrastructure.sphere.db.entity.TradePaymentCallBackResult;
 import infrastructure.sphere.db.mapper.TradePaymentCallBackResultMapper;
-import domain.sphere.repository.TradePaymentCallBackResultRepository;
 import org.springframework.stereotype.Service;
 
 @Service

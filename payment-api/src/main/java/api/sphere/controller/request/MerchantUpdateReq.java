@@ -2,10 +2,10 @@ package api.sphere.controller.request;
 
 
 import api.sphere.config.EnumValid;
-import share.sphere.enums.MerchantStatusEnum;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import share.sphere.enums.MerchantStatusEnum;
 
 import java.util.List;
 

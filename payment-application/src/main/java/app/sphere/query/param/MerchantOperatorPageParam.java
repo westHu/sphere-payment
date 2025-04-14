@@ -1,7 +1,9 @@
 package app.sphere.query.param;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class MerchantOperatorPageParam extends PageParam {
 
@@ -15,8 +17,4 @@ public class MerchantOperatorPageParam extends PageParam {
      */
     private String username;
 
-    /**
-     * 角色
-     */
-    private Integer role;
 }

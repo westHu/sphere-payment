@@ -1,9 +1,9 @@
 package app.sphere.command.cmd;
 
-import share.sphere.enums.TradePaymentSourceEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import share.sphere.enums.TradePaymentSourceEnum;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

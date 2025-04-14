@@ -12,8 +12,8 @@ import app.sphere.command.cmd.MerchantUpdateCommand;
 import app.sphere.command.cmd.MerchantVerifyCommand;
 import app.sphere.query.param.MerchantDropListParam;
 import app.sphere.query.param.MerchantIdParam;
-import infrastructure.sphere.db.entity.Merchant;
 import app.sphere.query.param.MerchantPageParam;
+import infrastructure.sphere.db.entity.Merchant;
 import org.mapstruct.Mapper;
 
 import java.util.List;

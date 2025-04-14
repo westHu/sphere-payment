@@ -1,16 +1,16 @@
 package api.sphere.convert;
 
 
+import api.sphere.controller.request.TradeCashRefundReq;
+import api.sphere.controller.request.TradeCashSupplementReq;
+import api.sphere.controller.request.TradePayoutOrderPageReq;
+import api.sphere.controller.request.TradePayoutReq;
+import api.sphere.controller.response.TradeCashOrderPageVO;
+import api.sphere.controller.response.TradePayoutVO;
 import app.sphere.command.cmd.TradeCashRefundCommand;
 import app.sphere.command.cmd.TradeCashSupplementCommand;
 import app.sphere.command.cmd.TradePayoutCommand;
 import app.sphere.command.dto.TradePayoutDTO;
-import api.sphere.controller.request.TradeCashOrderPageReq;
-import api.sphere.controller.request.TradeCashRefundReq;
-import api.sphere.controller.request.TradeCashSupplementReq;
-import api.sphere.controller.request.TradePayoutReq;
-import api.sphere.controller.response.TradeCashOrderPageVO;
-import api.sphere.controller.response.TradePayoutVO;
 import app.sphere.query.dto.TradePayoutOrderPageDTO;
 import app.sphere.query.param.TradePayoutOrderPageParam;
 import org.mapstruct.Mapper;
@@ -24,7 +24,7 @@ public interface TradeCashConverter {
 
     TradePayoutVO convertTradePayoutVO(TradePayoutDTO dto);
 
-    TradePayoutOrderPageParam convertPageParam(TradeCashOrderPageReq req);
+    TradePayoutOrderPageParam convertPageParam(TradePayoutOrderPageReq req);
 
     List<TradeCashOrderPageVO> convertPageVOList(List<TradePayoutOrderPageDTO> orderList);
 
@@ -32,7 +32,7 @@ public interface TradeCashConverter {
 
     TradeCashRefundCommand convertTradeCashRefundCommand(TradeCashRefundReq req);
 
-    TradePayoutOrderPageParam convertTradeCashOrderPageParam(TradeCashOrderPageReq req);
+    TradePayoutOrderPageParam convertTradeCashOrderPageParam(TradePayoutOrderPageReq req);
 
     List<TradeCashOrderPageVO> convertTradeCashOrderPageVOList(List<TradePayoutOrderPageDTO> data);
 }

@@ -1,8 +1,8 @@
 package share.sphere.exception;
 
-import share.sphere.utils.PlaceholderUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import share.sphere.utils.PlaceholderUtil;
 
 /**
  * 系统统一根异常

@@ -1,12 +1,12 @@
 package api.sphere.controller.request;
 
 import api.sphere.config.EnumValid;
-import share.sphere.enums.SettleTypeEnum;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import share.sphere.enums.SettleTypeEnum;
 
 import java.math.BigDecimal;
 

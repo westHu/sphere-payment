@@ -2,7 +2,6 @@ package api.sphere.controller.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 
 /**
  * 密码重置

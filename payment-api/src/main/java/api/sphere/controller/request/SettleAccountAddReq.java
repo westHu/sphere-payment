@@ -1,10 +1,10 @@
 package api.sphere.controller.request;
 
 import api.sphere.config.EnumValid;
-import share.sphere.enums.AccountTypeEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import share.sphere.enums.AccountTypeEnum;
 
 
 @Data

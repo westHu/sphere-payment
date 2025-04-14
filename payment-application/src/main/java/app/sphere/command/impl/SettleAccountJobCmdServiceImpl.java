@@ -1,19 +1,18 @@
 package app.sphere.command.impl;
 
-import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import app.sphere.assembler.ApplicationConverter;
 import app.sphere.command.SettleAccountJobCmdService;
 import app.sphere.command.cmd.SettleAccountFlowOrderRevisionJobCommand;
 import app.sphere.command.cmd.SettleAccountFlowRevisionJobCommand;
 import app.sphere.command.cmd.SettleAccountSnapshotJobCommand;
-import infrastructure.sphere.db.entity.SettleAccount;
-import infrastructure.sphere.db.entity.SettleAccountFlow;
-import infrastructure.sphere.db.entity.SettleAccountSnapshot;
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import domain.sphere.repository.SettleAccountFlowRepository;
 import domain.sphere.repository.SettleAccountRepository;
 import domain.sphere.repository.SettleAccountSnapshotRepository;
-import domain.sphere.repository.SettleOrderRepository;
+import infrastructure.sphere.db.entity.SettleAccount;
+import infrastructure.sphere.db.entity.SettleAccountFlow;
+import infrastructure.sphere.db.entity.SettleAccountSnapshot;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,7 +24,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static share.sphere.TradeConstant.LIMIT_1;
 

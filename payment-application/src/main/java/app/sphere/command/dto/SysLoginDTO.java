@@ -1,7 +1,5 @@
 package app.sphere.command.dto;
 
-import infrastructure.sphere.db.entity.Merchant;
-import infrastructure.sphere.db.entity.MerchantOperator;
 import infrastructure.sphere.db.entity.SysUser;
 import lombok.Data;
 

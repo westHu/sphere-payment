@@ -1,8 +1,8 @@
 package app.sphere.query.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import share.sphere.TradeConstant;
 import lombok.Data;
+import share.sphere.TradeConstant;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

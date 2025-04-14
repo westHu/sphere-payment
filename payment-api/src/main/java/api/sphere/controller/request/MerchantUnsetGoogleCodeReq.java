@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UnsetGoogleCodeReq extends QuerySourceReq {
+public class MerchantUnsetGoogleCodeReq extends QuerySourceReq {
 
     /**
      * 商户ID

@@ -1,7 +1,7 @@
 package app.sphere.query.param;
 
-import share.sphere.enums.TradeTypeEnum;
 import lombok.Data;
+import share.sphere.enums.TradeTypeEnum;
 
 import java.math.BigDecimal;
 

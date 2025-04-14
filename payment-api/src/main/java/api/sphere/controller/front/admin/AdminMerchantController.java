@@ -12,23 +12,23 @@ import api.sphere.controller.request.MerchantOperatorPageReq;
 import api.sphere.controller.request.MerchantOperatorUpdateReq;
 import api.sphere.controller.request.MerchantPageReq;
 import api.sphere.controller.request.MerchantPasswordResetReq;
+import api.sphere.controller.request.MerchantUnsetGoogleCodeReq;
 import api.sphere.controller.request.MerchantUpdateReq;
 import api.sphere.controller.request.MerchantVerifyReq;
 import api.sphere.controller.request.PaymentLinkSettingReq;
 import api.sphere.controller.request.SettleAccountListReq;
 import api.sphere.controller.request.TradeCallbackReq;
-import api.sphere.controller.request.UnsetGoogleCodeReq;
 import api.sphere.controller.response.MerchantBaseVO;
 import api.sphere.controller.response.MerchantOperatorVO;
 import api.sphere.convert.MerchantChannelConfigConverter;
 import api.sphere.convert.MerchantConfigConverter;
+import api.sphere.convert.MerchantConverter;
 import api.sphere.convert.MerchantLoginConverter;
 import api.sphere.convert.MerchantOperatorConverter;
-import api.sphere.convert.MerchantConverter;
 import api.sphere.convert.SettleAccountConverter;
 import api.sphere.convert.TradeCallbackConverter;
-import app.sphere.command.MerchantCmdService;
 import app.sphere.command.MerchantChannelConfigCmdService;
+import app.sphere.command.MerchantCmdService;
 import app.sphere.command.MerchantConfigCmdService;
 import app.sphere.command.MerchantLoginCmdService;
 import app.sphere.command.MerchantOperatorCmdService;
@@ -385,7 +385,7 @@ public class AdminMerchantController {
      * 解绑谷歌验证器
      */
     @PostMapping("/v1/unsetGoogleCode")
-    public Mono<Result<Boolean>> unsetGoogleCode(@RequestBody @Validated UnsetGoogleCodeReq req) {
+    public Mono<Result<Boolean>> unsetGoogleCode(@RequestBody @Validated MerchantUnsetGoogleCodeReq req) {
         log.info("解绑谷歌验证器, merchantId={}", req.getMerchantId());
         MerchantUnsetGoogleCodeCmd cmd = merchantLoginConverter.convertMerchantUnsetGoogleCodeCmd(req);
         boolean unset = merchantLoginCmdService.unsetGoogleAuth(cmd);

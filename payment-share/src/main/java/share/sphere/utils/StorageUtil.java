@@ -1,7 +1,6 @@
 package share.sphere.utils;
 
 import share.sphere.TradeConstant;
-import share.sphere.exception.ExceptionCode;
 import share.sphere.exception.PaymentException;
 
 import java.time.LocalDateTime;

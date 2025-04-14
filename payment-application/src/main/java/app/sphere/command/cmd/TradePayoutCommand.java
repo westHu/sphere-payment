@@ -1,7 +1,7 @@
 package app.sphere.command.cmd;
 
-import share.sphere.enums.TradePayoutSourceEnum;
 import lombok.Data;
+import share.sphere.enums.TradePayoutSourceEnum;
 
 @Data
 public class TradePayoutCommand extends TradeCommand {

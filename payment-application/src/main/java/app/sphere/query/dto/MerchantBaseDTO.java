@@ -1,7 +1,7 @@
 package app.sphere.query.dto;
 
-import share.sphere.enums.MerchantStatusEnum;
 import lombok.Data;
+import share.sphere.enums.MerchantStatusEnum;
 
 @Data
 public class MerchantBaseDTO {

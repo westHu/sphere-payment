@@ -3,25 +3,19 @@ package api.sphere.controller.request;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Data
-public class MerchantCashPaymentConfigUpdateReq {
+public class TradeWithdrawFlagReq {
 
     /**
-     * 商户
+     * 商户号
      */
     @NotBlank(message = "merchantId is required")
     private String merchantId;
 
     /**
-     * 费率
+     * 提现日期
      */
-    private BigDecimal singleRate;
-
-    /**
-     * 费用
-     */
-    private BigDecimal singleFee;
+    @NotBlank(message = "withdrawDate is required")
+    private String withdrawDate;
 
 }

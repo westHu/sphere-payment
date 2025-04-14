@@ -9,14 +9,13 @@ import app.sphere.command.cmd.TradeRechargeReviewCommand;
 import app.sphere.command.cmd.TradeReviewCommand;
 import app.sphere.command.cmd.TradeTransferReviewCommand;
 import app.sphere.command.cmd.TradeWithdrawReviewCommand;
+import app.sphere.query.dto.MerchantConfigDTO;
+import app.sphere.query.dto.MerchantPayoutConfigDTO;
 import infrastructure.sphere.db.entity.MerchantConfig;
 import infrastructure.sphere.db.entity.MerchantPayoutConfig;
 import infrastructure.sphere.db.entity.SettleAccount;
 import infrastructure.sphere.db.entity.SettleAccountSnapshot;
-import app.sphere.query.dto.MerchantConfigDTO;
-import app.sphere.query.dto.MerchantPayoutConfigDTO;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "Spring")
 public interface ApplicationConverter {

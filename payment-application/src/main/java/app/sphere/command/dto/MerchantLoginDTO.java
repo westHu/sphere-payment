@@ -1,13 +1,8 @@
 package app.sphere.command.dto;
 
-import app.sphere.query.dto.MerchantBaseDTO;
-import app.sphere.query.dto.MerchantConfigDTO;
-import app.sphere.query.dto.MerchantOperatorDTO;
 import infrastructure.sphere.db.entity.Merchant;
 import infrastructure.sphere.db.entity.MerchantOperator;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 public class MerchantLoginDTO {

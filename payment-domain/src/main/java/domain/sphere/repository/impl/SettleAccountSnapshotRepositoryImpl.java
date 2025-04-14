@@ -1,9 +1,9 @@
 package domain.sphere.repository.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import domain.sphere.repository.SettleAccountSnapshotRepository;
 import infrastructure.sphere.db.entity.SettleAccountSnapshot;
 import infrastructure.sphere.db.mapper.SettleAccountSnapshotMapper;
-import domain.sphere.repository.SettleAccountSnapshotRepository;
 import org.springframework.stereotype.Service;
 
 @Service

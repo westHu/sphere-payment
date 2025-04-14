@@ -1,16 +1,92 @@
 package api.sphere.controller.front.admin;
 
-import api.sphere.controller.request.*;
-import api.sphere.controller.response.*;
-import api.sphere.convert.*;
-import app.sphere.command.*;
-import app.sphere.command.cmd.*;
-import app.sphere.query.*;
-import app.sphere.query.dto.*;
-import app.sphere.query.param.*;
+import api.sphere.controller.request.TradeCallbackReq;
+import api.sphere.controller.request.TradeCashRefundReq;
+import api.sphere.controller.request.TradeCashSupplementReq;
+import api.sphere.controller.request.TradeMerchantStatisticsSnapshotReq;
+import api.sphere.controller.request.TradeNoReq;
+import api.sphere.controller.request.TradePayOrderPageReq;
+import api.sphere.controller.request.TradePaymentLinkPageReq;
+import api.sphere.controller.request.TradePaymentRefundReq;
+import api.sphere.controller.request.TradePaymentReq;
+import api.sphere.controller.request.TradePaymentSupplementReq;
+import api.sphere.controller.request.TradePayoutOrderPageReq;
+import api.sphere.controller.request.TradeRechargeOrderPageReq;
+import api.sphere.controller.request.TradeRechargeReq;
+import api.sphere.controller.request.TradeReviewReq;
+import api.sphere.controller.request.TradeStatisticsChannelReq;
+import api.sphere.controller.request.TradeStatisticsMerchantReq;
+import api.sphere.controller.request.TradeStatisticsPlatformReq;
+import api.sphere.controller.request.TradeTimelyStatisticsIndexReq;
+import api.sphere.controller.request.TradeTransferOrderPageReq;
+import api.sphere.controller.request.TradeTransferReq;
+import api.sphere.controller.request.TradeWithdrawFlagReq;
+import api.sphere.controller.request.TradeWithdrawOrderPageReq;
+import api.sphere.controller.response.TradeCashOrderPageVO;
+import api.sphere.controller.response.TradePaymentLinkOrderVO;
+import api.sphere.controller.response.TradeRechargeOrderPageVO;
+import api.sphere.controller.response.TradeTransferOrderPageVO;
+import api.sphere.controller.response.TradeWithdrawOrderPageVO;
+import api.sphere.convert.SnapshotTradeStatisticsConverter;
+import api.sphere.convert.TradeCallbackConverter;
+import api.sphere.convert.TradeCashConverter;
+import api.sphere.convert.TradePayConverter;
+import api.sphere.convert.TradeRechargeConverter;
+import api.sphere.convert.TradeReviewConverter;
+import api.sphere.convert.TradeTransferConverter;
+import api.sphere.convert.TradeWithdrawConverter;
+import app.sphere.command.TradeCallBackCmdService;
+import app.sphere.command.TradePaymentOrderCmdService;
+import app.sphere.command.TradePayoutOrderCmdService;
+import app.sphere.command.TradeRechargeOrderCmdService;
+import app.sphere.command.TradeReviewCmdService;
+import app.sphere.command.TradeTransferOrderCmdService;
+import app.sphere.command.TradeWithdrawOrderCmdService;
+import app.sphere.command.cmd.TradeCallbackCommand;
+import app.sphere.command.cmd.TradeCashRefundCommand;
+import app.sphere.command.cmd.TradeCashSupplementCommand;
+import app.sphere.command.cmd.TradePaymentCmd;
+import app.sphere.command.cmd.TradePaymentRefundCmd;
+import app.sphere.command.cmd.TradePaymentSupplementCmd;
+import app.sphere.command.cmd.TradeReviewCommand;
+import app.sphere.command.cmd.TradeTransferCommand;
+import app.sphere.query.SnapshotTradeStatisticsQueryService;
+import app.sphere.query.TradePaymentOrderQueryService;
+import app.sphere.query.TradePayoutOrderQueryService;
+import app.sphere.query.TradeRechargeOrderQueryService;
+import app.sphere.query.TradeTransferOrderQueryService;
+import app.sphere.query.TradeWithdrawOrderQueryService;
+import app.sphere.query.dto.PageDTO;
+import app.sphere.query.dto.TradeChannelDailySnapchatDTO;
+import app.sphere.query.dto.TradeMerchantDailySnapchatDTO;
+import app.sphere.query.dto.TradeMerchantStatisticsDTO;
+import app.sphere.query.dto.TradePaymentOrderDTO;
+import app.sphere.query.dto.TradePaymentOrderPageDTO;
+import app.sphere.query.dto.TradePayoutOrderDTO;
+import app.sphere.query.dto.TradePayoutOrderPageDTO;
+import app.sphere.query.dto.TradePayoutReceiptDTO;
+import app.sphere.query.dto.TradePlatformDailySnapchatDTO;
+import app.sphere.query.dto.TradeTimelyStatisticsIndexDTO;
+import app.sphere.query.dto.TradeTransferOrderDTO;
+import app.sphere.query.dto.TradeWithdrawOrderDTO;
+import app.sphere.query.param.TradeMerchantStatisticsSnapshotParam;
+import app.sphere.query.param.TradePaymentLinkPageParam;
+import app.sphere.query.param.TradePaymentOrderPageParam;
+import app.sphere.query.param.TradePayoutOrderPageParam;
+import app.sphere.query.param.TradeRechargeOrderPageParam;
+import app.sphere.query.param.TradeStatisticsChannelParam;
+import app.sphere.query.param.TradeStatisticsMerchantParam;
+import app.sphere.query.param.TradeStatisticsPlatformParam;
+import app.sphere.query.param.TradeTimelyStatisticsIndexParam;
+import app.sphere.query.param.TradeTransferOrderPageParam;
+import app.sphere.query.param.TradeWithdrawOrderPageParam;
+import app.sphere.query.param.WithdrawFlagParam;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import infrastructure.sphere.db.entity.*;
+import infrastructure.sphere.db.entity.TradePaymentLinkOrder;
+import infrastructure.sphere.db.entity.TradeRechargeOrder;
+import infrastructure.sphere.db.entity.TradeTransferOrder;
+import infrastructure.sphere.db.entity.TradeWithdrawOrder;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -272,7 +348,7 @@ public class AdminTradeController {
      * @return 订单分页列表
      */
     @PostMapping("/v1/pagePayoutOrderList")
-    public Mono<PageResult<TradeCashOrderPageVO>> pageCashOrderList(@RequestBody @Validated TradeCashOrderPageReq req) {
+    public Mono<PageResult<TradeCashOrderPageVO>> pageCashOrderList(@RequestBody @Validated TradePayoutOrderPageReq req) {
         log.info("分页查询代付订单列表, req={}", JSONUtil.toJsonStr(req));
         TradePayoutOrderPageParam param = tradePayoutConverter.convertTradeCashOrderPageParam(req);
         PageDTO<TradePayoutOrderPageDTO> pageDTO = tradePayoutOrderQueryService.pagePayoutOrderList(param);
@@ -287,7 +363,7 @@ public class AdminTradeController {
      * @return 导出结果
      */
     @PostMapping("/v1/exportPayoutOrderList")
-    public Mono<Result<String>> exportCashOrderList(@RequestBody @Validated TradeCashOrderPageReq req) {
+    public Mono<Result<String>> exportCashOrderList(@RequestBody @Validated TradePayoutOrderPageReq req) {
         log.info("导出代付订单列表, req={}", JSONUtil.toJsonStr(req));
         TradePayoutOrderPageParam param = tradePayoutConverter.convertTradeCashOrderPageParam(req);
         return Mono.just(Result.ok(tradePayoutOrderQueryService.exportPayoutOrderList(param)));
@@ -587,7 +663,7 @@ public class AdminTradeController {
      * @return 提现标记
      */
     @PostMapping("/v1/getWithdrawFlag")
-    public Mono<Result<Boolean>> getWithdrawFlag(@RequestBody @Validated WithdrawFlagReq req) {
+    public Mono<Result<Boolean>> getWithdrawFlag(@RequestBody @Validated TradeWithdrawFlagReq req) {
         log.info("获取提现标记, req={}", JSONUtil.toJsonStr(req));
         WithdrawFlagParam param = tradeWithdrawConverter.convertWithdrawFlagParam(req);
         return Mono.just(Result.ok(tradeWithdrawOrderQueryService.getWithdrawFlag(param)));

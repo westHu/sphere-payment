@@ -1,7 +1,7 @@
 package app.sphere.command;
 
-import app.sphere.command.dto.trade.callback.TradeCallBackDTO;
 import app.sphere.command.cmd.TradeCallbackCommand;
+import app.sphere.command.dto.trade.callback.TradeCallBackDTO;
 
 public interface TradeCallBackCmdService {
 

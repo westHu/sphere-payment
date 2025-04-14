@@ -1,18 +1,122 @@
 package api.sphere.controller.front.merchant;
 
-import api.sphere.controller.request.*;
-import api.sphere.controller.response.*;
-import api.sphere.convert.*;
-import app.sphere.command.*;
-import app.sphere.command.cmd.*;
-import app.sphere.command.dto.*;
-import app.sphere.query.*;
-import app.sphere.query.dto.*;
-import app.sphere.query.param.*;
+import api.sphere.controller.request.MerchantChannelConfigListReq;
+import api.sphere.controller.request.MerchantConfigUpdateReq;
+import api.sphere.controller.request.MerchantIdReq;
+import api.sphere.controller.request.MerchantLoginReq;
+import api.sphere.controller.request.MerchantPasswordChangeReq;
+import api.sphere.controller.request.MerchantPasswordForgetReq;
+import api.sphere.controller.request.MerchantSetGoogleCodeReq;
+import api.sphere.controller.request.MerchantShowGoogleCodeReq;
+import api.sphere.controller.request.MerchantUnsetGoogleCodeReq;
+import api.sphere.controller.request.MerchantVerifyGoogleCodeReq;
+import api.sphere.controller.request.PaymentLinkSettingReq;
+import api.sphere.controller.request.PaymentMethodDropReq;
+import api.sphere.controller.request.SettleAccountFlowPageReq;
+import api.sphere.controller.request.SettleAccountSnapshotReq;
+import api.sphere.controller.request.TradeNoReq;
+import api.sphere.controller.request.TradePayOrderPageReq;
+import api.sphere.controller.request.TradePaymentLinkPageReq;
+import api.sphere.controller.request.TradePaymentReq;
+import api.sphere.controller.request.TradePayoutOrderPageReq;
+import api.sphere.controller.request.TradePreRechargeReq;
+import api.sphere.controller.request.TradeRechargeOrderPageReq;
+import api.sphere.controller.request.TradeRechargeReq;
+import api.sphere.controller.request.TradeTransferOrderPageReq;
+import api.sphere.controller.request.TradeTransferReq;
+import api.sphere.controller.request.TradeWithdrawFlagReq;
+import api.sphere.controller.request.TradeWithdrawOrderPageReq;
+import api.sphere.controller.request.TradeWithdrawReq;
+import api.sphere.controller.response.MerchantBaseVO;
+import api.sphere.controller.response.PaymentMethodDropVO;
+import api.sphere.controller.response.SettleAccountFlowVO;
+import api.sphere.controller.response.TradeCashOrderPageVO;
+import api.sphere.controller.response.TradePaymentLinkOrderVO;
+import api.sphere.controller.response.TradeRechargeOrderPageVO;
+import api.sphere.controller.response.TradeTransferOrderPageVO;
+import api.sphere.controller.response.TradeWithdrawOrderPageVO;
+import api.sphere.convert.MerchantChannelConfigConverter;
+import api.sphere.convert.MerchantConfigConverter;
+import api.sphere.convert.MerchantConverter;
+import api.sphere.convert.MerchantLoginConverter;
+import api.sphere.convert.PaymentMethodConverter;
+import api.sphere.convert.SettleAccountSnapshotConverter;
+import api.sphere.convert.SettleFlowConverter;
+import api.sphere.convert.TradeCashConverter;
+import api.sphere.convert.TradePayConverter;
+import api.sphere.convert.TradeRechargeConverter;
+import api.sphere.convert.TradeTransferConverter;
+import api.sphere.convert.TradeWithdrawConverter;
+import app.sphere.command.MerchantConfigCmdService;
+import app.sphere.command.MerchantLoginCmdService;
+import app.sphere.command.TradePaymentOrderCmdService;
+import app.sphere.command.TradePayoutOrderCmdService;
+import app.sphere.command.TradeRechargeOrderCmdService;
+import app.sphere.command.TradeTransferOrderCmdService;
+import app.sphere.command.TradeWithdrawOrderCmdService;
+import app.sphere.command.cmd.MerchantConfigUpdateCmd;
+import app.sphere.command.cmd.MerchantLoginCmd;
+import app.sphere.command.cmd.MerchantPasswordChannelCmd;
+import app.sphere.command.cmd.MerchantPasswordForgetCmd;
+import app.sphere.command.cmd.MerchantSetGoogleCodeCmd;
+import app.sphere.command.cmd.MerchantShowGoogleCodeCmd;
+import app.sphere.command.cmd.MerchantUnsetGoogleCodeCmd;
+import app.sphere.command.cmd.MerchantVerifyGoogleCodeCmd;
+import app.sphere.command.cmd.PaymentLinkSettingCmd;
+import app.sphere.command.cmd.TradePaymentCmd;
+import app.sphere.command.cmd.TradePreRechargeCommand;
+import app.sphere.command.cmd.TradeRechargeCommand;
+import app.sphere.command.cmd.TradeTransferCommand;
+import app.sphere.command.cmd.TradeWithdrawCommand;
+import app.sphere.command.dto.MerchantLoginDTO;
+import app.sphere.command.dto.PreRechargeDTO;
+import app.sphere.query.MerchantChannelConfigQueryService;
+import app.sphere.query.MerchantConfigQueryService;
+import app.sphere.query.MerchantPayoutConfigQueryService;
+import app.sphere.query.MerchantQueryService;
+import app.sphere.query.MerchantWithdrawConfigQueryService;
+import app.sphere.query.SettleAccountSnapshotQueryService;
+import app.sphere.query.SettleFlowQueryService;
+import app.sphere.query.TradePaymentOrderQueryService;
+import app.sphere.query.TradePayoutOrderQueryService;
+import app.sphere.query.TradeRechargeOrderQueryService;
+import app.sphere.query.TradeTransferOrderQueryService;
+import app.sphere.query.TradeWithdrawOrderQueryService;
+import app.sphere.query.dto.AccountSnapshotDTO;
+import app.sphere.query.dto.MerchantChannelConfigListDTO;
+import app.sphere.query.dto.MerchantConfigDTO;
+import app.sphere.query.dto.MerchantPaymentLinkSettingDTO;
+import app.sphere.query.dto.MerchantPayoutConfigDTO;
+import app.sphere.query.dto.MerchantWithdrawConfigDTO;
+import app.sphere.query.dto.PageDTO;
+import app.sphere.query.dto.TradePaymentOrderDTO;
+import app.sphere.query.dto.TradePaymentOrderPageDTO;
+import app.sphere.query.dto.TradePayoutOrderDTO;
+import app.sphere.query.dto.TradePayoutOrderPageDTO;
+import app.sphere.query.dto.TradePayoutReceiptDTO;
+import app.sphere.query.dto.TradeTransferOrderDTO;
+import app.sphere.query.dto.TradeWithdrawOrderDTO;
+import app.sphere.query.param.MerchantChannelConfigListParam;
+import app.sphere.query.param.MerchantIdParam;
+import app.sphere.query.param.SettleAccountFlowPageParam;
+import app.sphere.query.param.SettleAccountSnapshotParam;
+import app.sphere.query.param.TradePaymentLinkPageParam;
+import app.sphere.query.param.TradePaymentOrderPageParam;
+import app.sphere.query.param.TradePayoutOrderPageParam;
+import app.sphere.query.param.TradeRechargeOrderPageParam;
+import app.sphere.query.param.TradeTransferOrderPageParam;
+import app.sphere.query.param.TradeWithdrawOrderPageParam;
+import app.sphere.query.param.WithdrawFlagParam;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import domain.sphere.repository.PaymentMethodRepository;
-import infrastructure.sphere.db.entity.*;
+import infrastructure.sphere.db.entity.Merchant;
+import infrastructure.sphere.db.entity.PaymentMethod;
+import infrastructure.sphere.db.entity.SettleAccountFlow;
+import infrastructure.sphere.db.entity.TradePaymentLinkOrder;
+import infrastructure.sphere.db.entity.TradeRechargeOrder;
+import infrastructure.sphere.db.entity.TradeTransferOrder;
+import infrastructure.sphere.db.entity.TradeWithdrawOrder;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -277,7 +381,7 @@ public class MerchantAdminController {
      * @return 解绑结果
      */
     @PostMapping("/v1/unsetGoogleCode")
-    public Mono<Result<Boolean>> unsetGoogleCode(@RequestBody @Validated UnsetGoogleCodeReq req) {
+    public Mono<Result<Boolean>> unsetGoogleCode(@RequestBody @Validated MerchantUnsetGoogleCodeReq req) {
         log.info("解绑谷歌验证器, merchantId={}", req.getMerchantId());
         req.setQuerySource(QuerySourceEnum.MERCHANT_ADMIN.getCode());
         MerchantUnsetGoogleCodeCmd cmd = merchantLoginConverter.convertMerchantUnsetGoogleCodeCmd(req);
@@ -502,7 +606,7 @@ public class MerchantAdminController {
      * @return 代付订单分页结果
      */
     @PostMapping("/v1/pagePayoutOrderList")
-    public Mono<PageResult<TradeCashOrderPageVO>> pageCashOrderList(@RequestBody @Validated TradeCashOrderPageReq req) {
+    public Mono<PageResult<TradeCashOrderPageVO>> pageCashOrderList(@RequestBody @Validated TradePayoutOrderPageReq req) {
         log.info("分页查询代付订单列表, req={}", JSONUtil.toJsonStr(req));
         TradePayoutOrderPageParam param = tradePayoutConverter.convertPageParam(req);
 
@@ -518,7 +622,7 @@ public class MerchantAdminController {
      * @return 导出文件路径
      */
     @PostMapping("/v1/exportPayoutOrderList")
-    public Mono<Result<String>> exportCashOrderList(@RequestBody @Validated TradeCashOrderPageReq req) {
+    public Mono<Result<String>> exportCashOrderList(@RequestBody @Validated TradePayoutOrderPageReq req) {
         log.info("导出代付订单列表, req={}", JSONUtil.toJsonStr(req));
         TradePayoutOrderPageParam param = tradePayoutConverter.convertPageParam(req);
 
@@ -765,7 +869,7 @@ public class MerchantAdminController {
      * @return 标签状态
      */
     @PostMapping("/v1/getWithdrawFlag")
-    public Mono<Result<Boolean>> getWithdrawFlag(@RequestBody @Validated WithdrawFlagReq req) {
+    public Mono<Result<Boolean>> getWithdrawFlag(@RequestBody @Validated TradeWithdrawFlagReq req) {
         log.info("查询自动提现/转账标签, req={}", JSONUtil.toJsonStr(req));
         WithdrawFlagParam param = tradeWithdrawConverter.convertWithdrawFlagParam(req);
 

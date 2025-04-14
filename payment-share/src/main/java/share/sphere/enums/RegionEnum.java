@@ -3,8 +3,6 @@ package share.sphere.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**

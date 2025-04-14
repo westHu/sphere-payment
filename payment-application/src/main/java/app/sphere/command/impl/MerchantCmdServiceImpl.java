@@ -1,6 +1,8 @@
 package app.sphere.command.impl;
 
+import app.sphere.command.MerchantCmdService;
 import app.sphere.command.cmd.MerchantAddCommand;
+import app.sphere.command.cmd.MerchantUpdateCommand;
 import app.sphere.command.cmd.MerchantVerifyCommand;
 import app.sphere.command.dto.MerchantAttributeDTO;
 import app.sphere.manager.OrderNoManager;
@@ -9,20 +11,18 @@ import cn.hutool.crypto.digest.MD5;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import app.sphere.command.MerchantCmdService;
-import app.sphere.command.cmd.MerchantUpdateCommand;
 import domain.sphere.repository.MerchantOperatorRepository;
+import domain.sphere.repository.MerchantRepository;
 import infrastructure.sphere.db.entity.Merchant;
 import infrastructure.sphere.db.entity.MerchantOperator;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import share.sphere.enums.MerchantStatusEnum;
 import share.sphere.exception.ExceptionCode;
 import share.sphere.exception.PaymentException;
-import domain.sphere.repository.MerchantRepository;
-import jakarta.annotation.Resource;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;

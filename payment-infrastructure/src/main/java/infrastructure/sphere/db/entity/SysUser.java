@@ -2,6 +2,7 @@ package infrastructure.sphere.db.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
 import java.time.LocalDateTime;
 
 /**

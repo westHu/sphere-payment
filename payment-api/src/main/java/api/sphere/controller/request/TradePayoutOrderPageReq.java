@@ -1,12 +1,14 @@
 package api.sphere.controller.request;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class TradeCashOrderPageReq extends PageReq {
+public class TradePayoutOrderPageReq extends PageReq {
 
     /**
      * 商户ID

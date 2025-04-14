@@ -1,8 +1,8 @@
 package share.sphere.result;
 
-import share.sphere.exception.ExceptionCode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import share.sphere.exception.ExceptionCode;
 
 import java.util.List;
 

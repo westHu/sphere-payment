@@ -17,8 +17,4 @@ public class MerchantOperatorPageReq extends PageReq {
      */
     private String username;
 
-    /**
-     * 角色
-     */
-    private Integer role;
 }

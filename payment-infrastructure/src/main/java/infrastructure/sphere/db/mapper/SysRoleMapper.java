@@ -1,7 +1,7 @@
 package infrastructure.sphere.db.mapper;
 
-import infrastructure.sphere.db.entity.SysRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import infrastructure.sphere.db.entity.SysRole;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
